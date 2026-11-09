@@ -2,6 +2,7 @@ package ui;
 
 import entity.HocVien;
 import entity.TrinhDo;
+import entity.VaiTro;
 import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
@@ -14,7 +15,6 @@ import validator.NguoiValidator;
 import java.time.LocalDate;
 import java.util.List;
 
-// Menu quản lý học viên: CRUD, tìm theo tên / số điện thoại, sắp xếp theo tên, xem các lớp đang học
 public class HocVienUI {
     private static final HocVienService hocVienService = HocVienService.getObject();
     private static final DangKyService dangKyService = DangKyService.getObject();
@@ -68,7 +68,7 @@ public class HocVienUI {
         } while (choice != 0);
     }
 
-    public static void addUI() {
+    public static long addUI() {
         System.out.println("====== Them hoc vien ======");
         long id = hocVienService.taoIdMoi();
         System.out.println("Nhap ho ten: ");
@@ -84,15 +84,21 @@ public class HocVienUI {
         try {
             hocVienService.add(new HocVien(id, hoTen, soDienThoai, email, ngaySinh, trinhDo));
             System.out.println("Da them hoc vien, id = " + id);
+            TaiKhoanUI.taoTaiKhoanChoNguoi(VaiTro.HOC_VIEN, id);
+            return id;
         } catch (NghiepVuException e) {
             System.out.println("Khong the them: " + e.getMessage());
+            return -1;
         }
     }
 
     public static void editUI() {
         System.out.println("====== Sua hoc vien ======");
-        System.out.println("Nhap id hoc vien can sua: ");
+        System.out.println("Nhap id hoc vien can sua (0 de quay lai): ");
         long id = InputHelper.inputLong();
+        if (id == 0) {
+            return;
+        }
         try {
             HocVien cu = hocVienService.findById(id);
             System.out.println("(Nhan Enter de giu gia tri cu)");
@@ -117,14 +123,17 @@ public class HocVienUI {
 
     public static void deleteUI() {
         System.out.println("====== Xoa hoc vien ======");
-        System.out.println("Nhap id hoc vien can xoa: ");
+        System.out.println("Nhap id hoc vien can xoa (0 de quay lai): ");
         long id = InputHelper.inputLong();
+        if (id == 0) {
+            return;
+        }
         try {
             HocVien hocVien = hocVienService.findById(id);
             System.out.println("Ban co chac muon xoa hoc vien '" + hocVien.getHoTen() + "'? (y/n)");
             if (InputHelper.inputYesNo()) {
                 hocVienService.delete(id);
-                System.out.println("Da xoa hoc vien!");
+                System.out.println("Da xoa hoc vien va tai khoan dang nhap cua hoc vien nay!");
             }
         } catch (DataNotFoundException e) {
             System.out.println("Khong tim thay hoc vien id " + id);
@@ -152,6 +161,9 @@ public class HocVienUI {
 
     public static void xemLopCuaHocVienUI() {
         long hocVienId = chonHocVienId();
+        if (hocVienId == 0) {
+            return;
+        }
         System.out.println("Cac lop cua hoc vien " + layTenHocVien(hocVienId) + ":");
         DangKyUI.inDanhSach(dangKyService.layDangKyCuaHocVien(hocVienId));
     }
@@ -173,9 +185,12 @@ public class HocVienUI {
 
     public static long chonHocVienId() {
         inDanhSach(hocVienService.getAll());
-        System.out.println("Nhap id hoc vien: ");
+        System.out.println("Nhap id hoc vien (0 de quay lai): ");
         while (true) {
             long id = InputHelper.inputLong();
+            if (id == 0) {
+                return 0;
+            }
             try {
                 hocVienService.findById(id);
                 return id;

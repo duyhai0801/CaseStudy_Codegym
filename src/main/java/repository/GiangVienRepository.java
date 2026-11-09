@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-// Đọc/ghi data/giangvien.csv. Mỗi dòng: id,hoTen,soDienThoai,email,chuyenMon,soNamKinhNghiem
 public class GiangVienRepository implements IRepository<GiangVien> {
     private static final String FILE_NAME = "data/giangvien.csv";
 

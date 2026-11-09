@@ -13,9 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Nghiệp vụ chính của trung tâm: đăng ký học viên vào lớp, hủy đăng ký, đóng học phí.
 public class DangKyService implements IService<DangKy> {
-    // Học viên cũ (đã từng đăng ký ít nhất 1 lớp) được giảm 10% khi đăng ký lớp mới
     public static final int PHAN_TRAM_GIAM_HOC_VIEN_CU = 10;
 
     private DangKyRepository dangKyRepository = new DangKyRepository();
@@ -30,8 +28,6 @@ public class DangKyService implements IService<DangKy> {
         return dangKyService;
     }
 
-    // id = số giây hiện tại (giống bài mẫu: currentTimeMillis() / 1000).
-    // Bài mẫu bị trùng id nếu thêm 2 bản ghi trong cùng 1 giây, nên ở đây gặp id đã có thì cộng thêm 1.
     public long taoIdMoi() {
         long id = System.currentTimeMillis() / 1000;
         while (daCoId(id)) {
@@ -90,14 +86,6 @@ public class DangKyService implements IService<DangKy> {
         return this.list.get(index);
     }
 
-    /*
-    Đăng ký học viên vào lớp. Kiểm tra lần lượt:
-    1. Học viên và lớp có tồn tại
-    2. Lớp chưa kết thúc
-    3. Lớp chưa đủ sĩ số
-    4. Học viên chưa đăng ký lớp này
-    Đạt hết thì tính học phí (giảm cho học viên cũ) rồi lưu lượt đăng ký.
-     */
     public DangKy dangKyVaoLop(long hocVienId, long lopHocId) {
         HocVien hocVien;
         LopHoc lopHoc;
@@ -138,7 +126,6 @@ public class DangKyService implements IService<DangKy> {
         return dangKy;
     }
 
-    // Chỉ được hủy khi lớp chưa khai giảng. Trả về lượt đăng ký đã hủy để UI báo số tiền cần hoàn.
     public DangKy huyDangKy(long dangKyId) {
         DangKy dangKy = this.findById(dangKyId);
         LopHoc lopHoc = LopHocService.getObject().findById(dangKy.getLopHocId());

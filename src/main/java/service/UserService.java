@@ -9,7 +9,6 @@ import repository.UserRepository;
 
 import java.util.List;
 
-// Quản lý tài khoản: đăng nhập, admin cấp tài khoản cho giảng viên / học viên, đổi và đặt lại mật khẩu.
 public class UserService {
     public static final String ADMIN_USERNAME = "admin";
     public static final String ADMIN_PASSWORD_MAC_DINH = "admin";
@@ -27,7 +26,6 @@ public class UserService {
         return userService;
     }
 
-    // Tài khoản admin luôn có sẵn: nếu file chưa có admin (file mới / bị xóa) thì tự tạo admin/admin
     private void damBaoCoTaiKhoanAdmin() {
         for (User item : list) {
             if (item.getVaiTro() == VaiTro.ADMIN) {
@@ -38,8 +36,6 @@ public class UserService {
         userRepository.write(list);
     }
 
-    // id = số giây hiện tại (giống bài mẫu: currentTimeMillis() / 1000).
-    // Bài mẫu bị trùng id nếu thêm 2 bản ghi trong cùng 1 giây, nên ở đây gặp id đã có thì cộng thêm 1.
     public long taoIdMoi() {
         long id = System.currentTimeMillis() / 1000;
         while (daCoId(id)) {
@@ -57,7 +53,6 @@ public class UserService {
         return false;
     }
 
-    // Trả về tài khoản nếu đúng username + password, sai thì trả về null
     public User login(String username, String password) {
         for (User item : this.list) {
             if (item.getUsername().equals(username) && item.getPassword().equals(password)) {
@@ -93,12 +88,6 @@ public class UserService {
         return null;
     }
 
-    /*
-    Kiểm tra trước khi cấp tài khoản:
-    - Chỉ cấp cho GIANG_VIEN hoặc HOC_VIEN (admin chỉ có 1, có sẵn)
-    - Người được cấp phải tồn tại
-    - Mỗi người chỉ có 1 tài khoản
-     */
     public void kiemTraCoTheCapTaiKhoan(VaiTro vaiTro, long nguoiId) {
         if (vaiTro == VaiTro.ADMIN) {
             throw new NghiepVuException("Khong the cap them tai khoan quan tri vien.");
@@ -118,7 +107,6 @@ public class UserService {
         }
     }
 
-    // Chỉ admin gọi (qua TaiKhoanUI). Trùng username thì ném UserIsExist giống bài mẫu.
     public void taoTaiKhoan(User user) {
         kiemTraCoTheCapTaiKhoan(user.getVaiTro(), user.getNguoiId());
         for (User item : this.list) {
@@ -134,6 +122,23 @@ public class UserService {
         User user = findById(userId);
         user.setPassword(matKhauMoi);
         userRepository.write(list);
+    }
+
+    public boolean daCoUsername(String username) {
+        for (User item : list) {
+            if (item.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void xoaTaiKhoanCua(VaiTro vaiTro, long nguoiId) {
+        User user = timTaiKhoanCua(vaiTro, nguoiId);
+        if (user != null) {
+            this.list.remove(user);
+            userRepository.write(list);
+        }
     }
 
     public void xoaTaiKhoan(long userId) {

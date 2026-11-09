@@ -8,13 +8,12 @@ import lib.errors.DataNotFoundException;
 import lib.errors.NghiepVuException;
 import repository.DiemDanhRepository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Nghiệp vụ điểm danh: lưu / cập nhật điểm danh một buổi học, thống kê chuyên cần.
 public class DiemDanhService implements IService<DiemDanh> {
-    // Học viên đi học dưới mức này thì bị đánh dấu cần nhắc nhở
     public static final int TI_LE_CHUYEN_CAN_TOI_THIEU = 80;
 
     private DiemDanhRepository diemDanhRepository = new DiemDanhRepository();
@@ -29,7 +28,6 @@ public class DiemDanhService implements IService<DiemDanh> {
         return diemDanhService;
     }
 
-    // id = số giây hiện tại, trùng thì cộng 1 (giống các service khác)
     public long taoIdMoi() {
         long id = System.currentTimeMillis() / 1000;
         while (daCoId(id)) {
@@ -87,12 +85,6 @@ public class DiemDanhService implements IService<DiemDanh> {
         return this.list.get(this.findIndexById(id));
     }
 
-    /*
-    Kiểm tra trước khi điểm danh:
-    - Lớp phải đang học
-    - Ngày điểm danh không ở tương lai và không trước ngày khai giảng
-    - Lớp phải có học viên
-     */
     public void kiemTraCoTheDiemDanh(LopHoc lop, LocalDate ngay) {
         if (lop.getTrangThai() != TrangThaiLop.DANG_HOC) {
             throw new NghiepVuException("Chi diem danh duoc lop dang hoc (lop " + lop.getTenLop() + " dang o trang thai '"
@@ -109,6 +101,51 @@ public class DiemDanhService implements IService<DiemDanh> {
         }
     }
 
+    public List<DayOfWeek> layCacThuCoLich(LopHoc lop) {
+        List<DayOfWeek> cacThu = new ArrayList<>();
+        String[] cacPhan = lop.getLichHoc().toUpperCase().split("[^A-Z0-9]+");
+        for (String phan : cacPhan) {
+            DayOfWeek thu = null;
+            switch (phan) {
+                case "T2":
+                    thu = DayOfWeek.MONDAY;
+                    break;
+                case "T3":
+                    thu = DayOfWeek.TUESDAY;
+                    break;
+                case "T4":
+                    thu = DayOfWeek.WEDNESDAY;
+                    break;
+                case "T5":
+                    thu = DayOfWeek.THURSDAY;
+                    break;
+                case "T6":
+                    thu = DayOfWeek.FRIDAY;
+                    break;
+                case "T7":
+                    thu = DayOfWeek.SATURDAY;
+                    break;
+                case "CN":
+                    thu = DayOfWeek.SUNDAY;
+                    break;
+                default:
+                    break;
+            }
+            if (thu != null && !cacThu.contains(thu)) {
+                cacThu.add(thu);
+            }
+        }
+        return cacThu;
+    }
+
+    public boolean laNgayCoLich(LopHoc lop, LocalDate ngay) {
+        List<DayOfWeek> cacThu = layCacThuCoLich(lop);
+        if (cacThu.isEmpty()) {
+            return true;
+        }
+        return cacThu.contains(ngay.getDayOfWeek());
+    }
+
     public boolean daDiemDanh(long lopHocId, LocalDate ngay) {
         return !layDiemDanhBuoi(lopHocId, ngay).isEmpty();
     }
@@ -123,10 +160,8 @@ public class DiemDanhService implements IService<DiemDanh> {
         return ketQua;
     }
 
-    // Lưu điểm danh 1 buổi. Nếu buổi đó đã điểm danh rồi thì xóa bản cũ rồi lưu bản mới (= cập nhật điểm danh).
     public void luuDiemDanhBuoi(LopHoc lop, LocalDate ngay, List<DiemDanh> danhSachMoi) {
         kiemTraCoTheDiemDanh(lop, ngay);
-        // Duyệt ngược để xóa phần tử trong lúc lặp mà không bị lệch chỉ số
         for (int i = list.size() - 1; i >= 0; i--) {
             DiemDanh item = list.get(i);
             if (item.getLopHocId() == lop.getId() && item.getNgay().equals(ngay)) {
@@ -140,7 +175,6 @@ public class DiemDanhService implements IService<DiemDanh> {
         diemDanhRepository.write(list);
     }
 
-    // Các ngày lớp đã được điểm danh, sắp xếp tăng dần, mỗi ngày chỉ xuất hiện 1 lần
     public List<LocalDate> layCacNgayDaDiemDanh(long lopHocId) {
         List<LocalDate> cacNgay = new ArrayList<>();
         for (DiemDanh item : list) {
@@ -173,9 +207,12 @@ public class DiemDanhService implements IService<DiemDanh> {
         return dem;
     }
 
-    // Tỉ lệ có mặt (%) của học viên trong lớp, tính trên số buổi lớp đã điểm danh
+    public int demSoBuoiCuaHocVien(long lopHocId, long hocVienId) {
+        return layDiemDanhCuaHocVien(lopHocId, hocVienId).size();
+    }
+
     public double tinhTiLeChuyenCan(long lopHocId, long hocVienId) {
-        int soBuoi = layCacNgayDaDiemDanh(lopHocId).size();
+        int soBuoi = demSoBuoiCuaHocVien(lopHocId, hocVienId);
         if (soBuoi == 0) {
             return 100;
         }

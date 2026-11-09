@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-// Đọc/ghi data/khoahoc.csv. Mỗi dòng: id,tenKhoaHoc,trinhDo,soBuoi,hocPhi
 public class KhoaHocRepository implements IRepository<KhoaHoc> {
     private static final String FILE_NAME = "data/khoahoc.csv";
 
@@ -36,13 +35,13 @@ public class KhoaHocRepository implements IRepository<KhoaHoc> {
             FileReader fileReader = new FileReader(FILE_NAME, StandardCharsets.UTF_8);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             while (true) {
-                String line = bufferedReader.readLine(); // 3,IELTS 5.5,TRUNG_CAP,36,7200000
+                String line = bufferedReader.readLine();
                 if (line == null) break;
-                if (line.trim().isEmpty()) continue; // bỏ qua dòng trống
+                if (line.trim().isEmpty()) continue;
                 String[] data = line.split(",");
                 long id = Long.parseLong(data[0]);
                 String tenKhoaHoc = data[1];
-                TrinhDo trinhDo = TrinhDo.valueOf(data[2]); // "TRUNG_CAP" -> TrinhDo.TRUNG_CAP
+                TrinhDo trinhDo = TrinhDo.valueOf(data[2]);
                 int soBuoi = Integer.parseInt(data[3]);
                 long hocPhi = Long.parseLong(data[4]);
                 list.add(new KhoaHoc(id, tenKhoaHoc, trinhDo, soBuoi, hocPhi));

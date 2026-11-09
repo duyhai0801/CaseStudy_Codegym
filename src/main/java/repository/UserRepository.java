@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-// Đọc/ghi data/users.csv. Mỗi dòng: id,username,password,vaiTro,nguoiId
 public class UserRepository implements IRepository<User> {
     private static final String FILE_NAME = "data/users.csv";
 
@@ -36,11 +35,11 @@ public class UserRepository implements IRepository<User> {
             FileReader fileReader = new FileReader(FILE_NAME, StandardCharsets.UTF_8);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             while (true) {
-                String line = bufferedReader.readLine(); // 2,minhanh,minhanh123,GIANG_VIEN,1
+                String line = bufferedReader.readLine();
                 if (line == null) break;
                 if (line.trim().isEmpty()) continue;
                 String[] data = line.split(",");
-                if (data.length < 5) continue; // bỏ qua dòng sai định dạng (vd tài khoản kiểu cũ chưa có vai trò)
+                if (data.length < 5) continue;
                 long id = Long.parseLong(data[0]);
                 String username = data[1];
                 String password = data[2];

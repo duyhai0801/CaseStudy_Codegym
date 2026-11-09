@@ -12,7 +12,6 @@ import validator.KhoaHocValidator;
 
 import java.util.List;
 
-// Menu quản lý khóa học: thêm, sửa, xóa, xem, tìm theo tên, sắp xếp theo học phí
 public class KhoaHocUI {
     private static final KhoaHocService khoaHocService = KhoaHocService.getObject();
 
@@ -74,8 +73,11 @@ public class KhoaHocUI {
 
     public static void editUI() {
         System.out.println("====== Sua khoa hoc ======");
-        System.out.println("Nhap id khoa hoc can sua: ");
+        System.out.println("Nhap id khoa hoc can sua (0 de quay lai): ");
         long id = InputHelper.inputLong();
+        if (id == 0) {
+            return;
+        }
         try {
             KhoaHoc cu = khoaHocService.findById(id);
             System.out.println("(Nhan Enter de giu gia tri cu)");
@@ -87,7 +89,6 @@ public class KhoaHocUI {
             int soBuoi = KhoaHocValidator.inputSoBuoi(cu.getSoBuoi());
             System.out.println("Hoc phi [" + cu.getHocPhi() + "]: ");
             long hocPhi = KhoaHocValidator.inputHocPhi(cu.getHocPhi());
-            // Tạo object mới rồi mới update, để nếu service từ chối thì dữ liệu cũ không bị đổi dở dang
             khoaHocService.update(id, new KhoaHoc(id, tenKhoaHoc, trinhDo, soBuoi, hocPhi));
             System.out.println("Da cap nhat khoa hoc! (Cac dang ky cu van giu muc hoc phi da chot)");
         } catch (DataNotFoundException e) {
@@ -97,8 +98,11 @@ public class KhoaHocUI {
 
     public static void deleteUI() {
         System.out.println("====== Xoa khoa hoc ======");
-        System.out.println("Nhap id khoa hoc can xoa: ");
+        System.out.println("Nhap id khoa hoc can xoa (0 de quay lai): ");
         long id = InputHelper.inputLong();
+        if (id == 0) {
+            return;
+        }
         try {
             KhoaHoc khoaHoc = khoaHocService.findById(id);
             System.out.println("Ban co chac muon xoa khoa hoc '" + khoaHoc.getTenKhoaHoc() + "'? (y/n)");
@@ -144,13 +148,14 @@ public class KhoaHocUI {
         }
     }
 
-    // Giống ProductUI.inputCategoryId() của bài mẫu: in danh sách rồi bắt nhập đến khi đúng id.
-    // giaTriCu khác null khi đang sửa lớp học (Enter = giữ khóa học cũ).
     public static long chonKhoaHocId(Long giaTriCu) {
         inDanhSach(khoaHocService.getAll());
-        System.out.println("Nhap id khoa hoc: ");
+        System.out.println("Nhap id khoa hoc (0 de quay lai): ");
         while (true) {
             long id = InputHelper.inputLong(giaTriCu);
+            if (id == 0) {
+                return 0;
+            }
             try {
                 khoaHocService.findById(id);
                 return id;
@@ -160,7 +165,6 @@ public class KhoaHocUI {
         }
     }
 
-    // Lấy tên để in ra bảng; nếu dữ liệu lỗi thì in "(khong ton tai)" thay vì làm crash chương trình
     public static String layTenKhoaHoc(long id) {
         try {
             return khoaHocService.findById(id).getTenKhoaHoc();

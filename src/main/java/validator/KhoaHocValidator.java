@@ -1,8 +1,6 @@
 package validator;
 
-// Kiểm tra dữ liệu nhập cho KhoaHoc
 public class KhoaHocValidator {
-    // Có ít nhất 1 chữ cái, cho phép số và . + - (vd "IELTS 5.5", "TOEIC 650+"), không có dấu phẩy
     private static final String TEN_KHOA_HOC_REGEX = "^(?=.*[a-zA-ZÀ-ỹ])[a-zA-Z0-9À-ỹ .+\\-]{3,40}$";
 
     public static String inputTenKhoaHoc(String giaTriCu) {

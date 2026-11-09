@@ -9,8 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Đọc/ghi data/lophoc.csv.
-// Mỗi dòng: id,tenLop,khoaHocId,giangVienId,lichHoc,ngayKhaiGiang(yyyy-MM-dd),siSoToiDa,trangThai
 public class LopHocRepository implements IRepository<LopHoc> {
     private static final String FILE_NAME = "data/lophoc.csv";
 

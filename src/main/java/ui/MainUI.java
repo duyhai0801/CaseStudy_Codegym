@@ -3,7 +3,6 @@ package ui;
 import entity.User;
 import lib.InputHelper;
 
-// Menu của ADMIN (quản trị viên): toàn quyền với mọi chức năng
 public class MainUI {
     public static void showMainMenu(User user) {
         int choice;
@@ -16,7 +15,7 @@ public class MainUI {
             System.out.println("4. Quan ly hoc vien");
             System.out.println("5. Dang ky & hoc phi");
             System.out.println("6. Thong ke");
-            System.out.println("7. Diem danh & chuyen can");
+            System.out.println("7. Xem diem danh & chuyen can");
             System.out.println("8. Quan ly tai khoan");
             System.out.println("9. Doi mat khau");
             System.out.println("0. Dang xuat");

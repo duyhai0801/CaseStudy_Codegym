@@ -5,9 +5,7 @@ import lib.InputHelper;
 import java.time.LocalDate;
 import java.time.Period;
 
-// Kiểm tra dữ liệu nhập cho GiangVien và HocVien (các thuộc tính kế thừa từ Nguoi và thuộc tính riêng)
 public class NguoiValidator {
-    // Chỉ chữ cái (có dấu) và khoảng trắng, 2-50 ký tự. Không có dấu phẩy nên không làm hỏng file CSV.
     private static final String HO_TEN_REGEX = "^(?=.*[a-zA-ZÀ-ỹ])[a-zA-ZÀ-ỹ ]{2,50}$";
     private static final String SO_DIEN_THOAI_REGEX = "^0\\d{9}$";
     private static final String EMAIL_REGEX = "^[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+$";
@@ -37,7 +35,6 @@ public class NguoiValidator {
         return CommonValidator.inputIntInRange(0, 50, giaTriCu);
     }
 
-    // Ngày sinh phải ở quá khứ và học viên từ 6 đến 100 tuổi
     public static LocalDate inputNgaySinh(LocalDate giaTriCu) {
         while (true) {
             LocalDate ngaySinh = InputHelper.inputDate(giaTriCu);

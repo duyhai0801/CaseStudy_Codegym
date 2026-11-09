@@ -2,20 +2,23 @@ package ui;
 
 import entity.DangKy;
 import entity.GiangVien;
+import entity.HocVien;
 import entity.LopHoc;
 import entity.TrangThaiHocPhi;
 import entity.TrangThaiLop;
 import entity.User;
+import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
+import lib.errors.NghiepVuException;
 import service.DangKyService;
 import service.GiangVienService;
+import service.HocVienService;
 import service.LopHocService;
 
+import java.util.ArrayList;
 import java.util.List;
 
-// Menu của tài khoản GIẢNG VIÊN: chỉ thao tác trên các lớp mình dạy
-// (xem lớp, xem học viên và tình hình đóng học phí, điểm danh, xem chuyên cần)
 public class GiangVienMenuUI {
     private static final GiangVienService giangVienService = GiangVienService.getObject();
     private static final LopHocService lopHocService = LopHocService.getObject();
@@ -38,9 +41,11 @@ public class GiangVienMenuUI {
             System.out.println("2. Xem cac lop toi day");
             System.out.println("3. Xem hoc vien va hoc phi cua lop");
             System.out.println("4. Diem danh / cap nhat diem danh");
-            System.out.println("5. Xem diem danh mot buoi");
+            System.out.println("5. Xem lich su buoi hoc");
             System.out.println("6. Tong hop chuyen can cua lop");
-            System.out.println("7. Doi mat khau");
+            System.out.println("7. Bat dau lop (khi den ngay khai giang)");
+            System.out.println("8. Ket thuc lop");
+            System.out.println("9. Doi mat khau");
             System.out.println("0. Dang xuat");
             System.out.println("Nhap lua chon: ");
             choice = InputHelper.inputInt();
@@ -64,6 +69,12 @@ public class GiangVienMenuUI {
                     DiemDanhUI.xemChuyenCanLopUI(giangVienId);
                     break;
                 case 7:
+                    batDauLopUI(giangVienId);
+                    break;
+                case 8:
+                    ketThucLopUI(giangVienId);
+                    break;
+                case 9:
                     AuthUI.doiMatKhauUI(user);
                     break;
                 case 0:
@@ -93,7 +104,6 @@ public class GiangVienMenuUI {
         System.out.println("Lop dang phu trach: " + soLopDangDay + " (tong cong " + cacLop.size() + " lop)");
     }
 
-    // Giảng viên xem được ai đã đóng / chưa đóng học phí trong lớp mình dạy
     public static void xemHocVienVaHocPhiUI(long giangVienId) {
         System.out.println("====== Hoc vien va hoc phi ======");
         LopHoc lop = DiemDanhUI.chonLop(giangVienId, false);
@@ -102,7 +112,28 @@ public class GiangVienMenuUI {
         }
         List<DangKy> cacDangKy = dangKyService.layDangKyCuaLop(lop.getId());
         System.out.println("Lop " + lop.getTenLop() + ":");
-        DangKyUI.inDanhSach(cacDangKy);
+        if (cacDangKy.isEmpty()) {
+            System.out.println("(Lop chua co hoc vien)");
+            return;
+        }
+        String format = "%-11s| %-20s| %-11s| %-24s| %16s | %16s | %s%n";
+        System.out.printf(format, "ID HV", "Hoc vien", "SDT", "Email", "Da dong", "Con no", "Hoc phi");
+        FormatHelper.printLine(125);
+        for (DangKy item : cacDangKy) {
+            String hoTen = "(khong ton tai)";
+            String soDienThoai = "-";
+            String email = "-";
+            try {
+                HocVien hocVien = HocVienService.getObject().findById(item.getHocVienId());
+                hoTen = hocVien.getHoTen();
+                soDienThoai = hocVien.getSoDienThoai();
+                email = hocVien.getEmail();
+            } catch (DataNotFoundException e) {
+            }
+            System.out.printf(format, item.getHocVienId(), hoTen, soDienThoai, email,
+                    FormatHelper.formatMoney(item.getSoTienDaDong()), FormatHelper.formatMoney(item.tinhSoTienConNo()),
+                    item.layTrangThaiHocPhi().getTenHienThi());
+        }
         int daDongDu = 0;
         for (DangKy item : cacDangKy) {
             if (item.layTrangThaiHocPhi() == TrangThaiHocPhi.DA_DONG) {
@@ -110,5 +141,64 @@ public class GiangVienMenuUI {
             }
         }
         System.out.println("=> " + daDongDu + "/" + cacDangKy.size() + " hoc vien da dong du hoc phi.");
+    }
+
+    private static LopHoc chonLopTheoTrangThai(long giangVienId, TrangThaiLop trangThai) {
+        List<LopHoc> cacLop = new ArrayList<>();
+        for (LopHoc item : lopHocService.locTheoGiangVien(giangVienId)) {
+            if (item.getTrangThai() == trangThai) {
+                cacLop.add(item);
+            }
+        }
+        if (cacLop.isEmpty()) {
+            System.out.println("Ban khong co lop nao o trang thai '" + trangThai.getTenHienThi() + "'.");
+            return null;
+        }
+        LopHocUI.inDanhSach(cacLop);
+        System.out.println("Nhap id lop (0 de quay lai): ");
+        while (true) {
+            long id = InputHelper.inputLong();
+            if (id == 0) {
+                return null;
+            }
+            for (LopHoc item : cacLop) {
+                if (item.getId() == id) {
+                    return item;
+                }
+            }
+            System.out.println("Chi duoc chon lop trong danh sach tren, nhap lai: ");
+        }
+    }
+
+    public static void batDauLopUI(long giangVienId) {
+        System.out.println("====== Bat dau lop ======");
+        LopHoc lop = chonLopTheoTrangThai(giangVienId, TrangThaiLop.SAP_KHAI_GIANG);
+        if (lop == null) {
+            return;
+        }
+        try {
+            lopHocService.batDauLop(lop.getId());
+            System.out.println("Lop " + lop.getTenLop() + " da chuyen sang 'Dang hoc'. Gio co the diem danh.");
+        } catch (NghiepVuException e) {
+            System.out.println("Khong the bat dau: " + e.getMessage());
+        }
+    }
+
+    public static void ketThucLopUI(long giangVienId) {
+        System.out.println("====== Ket thuc lop ======");
+        LopHoc lop = chonLopTheoTrangThai(giangVienId, TrangThaiLop.DANG_HOC);
+        if (lop == null) {
+            return;
+        }
+        System.out.println("Ket thuc lop " + lop.getTenLop() + "? Sau khi ket thuc se khong diem danh duoc nua. (y/n)");
+        if (!InputHelper.inputYesNo()) {
+            return;
+        }
+        try {
+            lopHocService.ketThucLop(lop.getId());
+            System.out.println("Lop " + lop.getTenLop() + " da ket thuc.");
+        } catch (NghiepVuException e) {
+            System.out.println("Khong the ket thuc: " + e.getMessage());
+        }
     }
 }

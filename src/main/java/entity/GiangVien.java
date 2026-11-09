@@ -1,6 +1,5 @@
 package entity;
 
-// Giảng viên của trung tâm, kế thừa các thông tin chung từ Nguoi
 public class GiangVien extends Nguoi {
     private String chuyenMon;
     private int soNamKinhNghiem;

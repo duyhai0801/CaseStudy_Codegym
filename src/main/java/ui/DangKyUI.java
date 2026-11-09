@@ -13,7 +13,6 @@ import service.LopHocService;
 
 import java.util.List;
 
-// Menu đăng ký & học phí: đăng ký vào lớp, hủy đăng ký, đóng học phí, xem tất cả lượt đăng ký
 public class DangKyUI {
     private static final DangKyService dangKyService = DangKyService.getObject();
     private static final LopHocService lopHocService = LopHocService.getObject();
@@ -56,11 +55,16 @@ public class DangKyUI {
         System.out.println("====== Dang ky hoc vien vao lop ======");
         System.out.println("--- Chon hoc vien ---");
         long hocVienId = HocVienUI.chonHocVienId();
+        if (hocVienId == 0) {
+            return;
+        }
         System.out.println("--- Cac lop con cho trong ---");
         LopHocUI.inDanhSach(lopHocService.locLopConCho());
-        // Cho nhập id tự do (không bắt chọn trong danh sách) để service tự kiểm tra các quy tắc
-        System.out.println("Nhap id lop muon dang ky: ");
+        System.out.println("Nhap id lop muon dang ky (0 de quay lai): ");
         long lopHocId = InputHelper.inputLong();
+        if (lopHocId == 0) {
+            return;
+        }
         try {
             DangKy dangKy = dangKyService.dangKyVaoLop(hocVienId, lopHocId);
             LopHoc lopHoc = lopHocService.findById(lopHocId);
@@ -106,8 +110,11 @@ public class DangKyUI {
         System.out.println("Phai dong: " + FormatHelper.formatMoney(dangKy.getHocPhiPhaiDong())
                 + " | Da dong: " + FormatHelper.formatMoney(dangKy.getSoTienDaDong())
                 + " | Con no: " + FormatHelper.formatMoney(dangKy.tinhSoTienConNo()));
-        System.out.println("Nhap so tien dong: ");
+        System.out.println("Nhap so tien dong (0 de quay lai): ");
         long soTien = InputHelper.inputLong();
+        if (soTien == 0) {
+            return;
+        }
         try {
             DangKy daCapNhat = dangKyService.dongHocPhi(dangKy.getId(), soTien);
             System.out.println("Da ghi nhan " + FormatHelper.formatMoney(soTien) + ". Con no: "
@@ -118,19 +125,23 @@ public class DangKyUI {
         }
     }
 
-    // Chọn học viên -> in các lượt đăng ký của học viên đó -> nhập mã đăng ký.
-    // Trả về null nếu học viên chưa đăng ký lớp nào hoặc nhập mã không thuộc học viên này.
     private static DangKy chonDangKyCuaHocVien() {
         System.out.println("--- Chon hoc vien ---");
         long hocVienId = HocVienUI.chonHocVienId();
+        if (hocVienId == 0) {
+            return null;
+        }
         List<DangKy> cacDangKy = dangKyService.layDangKyCuaHocVien(hocVienId);
         if (cacDangKy.isEmpty()) {
             System.out.println("Hoc vien nay chua dang ky lop nao.");
             return null;
         }
         inDanhSach(cacDangKy);
-        System.out.println("Nhap ma dang ky: ");
+        System.out.println("Nhap ma dang ky (0 de quay lai): ");
         long dangKyId = InputHelper.inputLong();
+        if (dangKyId == 0) {
+            return null;
+        }
         try {
             DangKy dangKy = dangKyService.findById(dangKyId);
             if (dangKy.getHocVienId() != hocVienId) {
@@ -149,7 +160,6 @@ public class DangKyUI {
         inDanhSach(dangKyService.getAll());
     }
 
-    // Dùng chung cho: xem tất cả đăng ký, xem học viên của 1 lớp, xem các lớp của 1 học viên
     public static void inDanhSach(List<DangKy> list) {
         if (list.isEmpty()) {
             System.out.println("(Danh sach trong)");

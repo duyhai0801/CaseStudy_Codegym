@@ -1,6 +1,5 @@
 package entity;
 
-// Lớp cha trừu tượng của GiangVien và HocVien: gom các thuộc tính chung của một người
 public abstract class Nguoi {
     private long id;
     private String hoTen;
@@ -17,10 +16,8 @@ public abstract class Nguoi {
         this.email = email;
     }
 
-    // Mỗi lớp con tự trả về vai trò của mình (đa hình)
     public abstract String layVaiTro();
 
-    // Lấy "tên" theo kiểu người Việt: chữ cuối của họ tên. Vd "Nguyen Van An" -> "An"
     public String layTen() {
         String[] cacChu = hoTen.trim().split(" ");
         return cacChu[cacChu.length - 1];

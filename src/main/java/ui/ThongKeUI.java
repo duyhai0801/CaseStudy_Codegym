@@ -11,7 +11,6 @@ import service.ThongKeService;
 import java.util.List;
 import java.util.Map;
 
-// Menu thống kê: tổng học phí, học viên còn nợ, sĩ số các lớp, xếp hạng khóa học, số lớp của giảng viên
 public class ThongKeUI {
     private static final ThongKeService thongKeService = ThongKeService.getObject();
     private static final LopHocService lopHocService = LopHocService.getObject();
@@ -102,7 +101,6 @@ public class ThongKeUI {
         }
     }
 
-    // Vẽ thanh tiến độ 20 ô, vd 50% -> [##########----------]
     private static String veThanhTienDo(double phanTram) {
         int soO = (int) Math.round(phanTram / 5);
         if (soO > 20) {

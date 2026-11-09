@@ -1,6 +1,5 @@
 package entity;
 
-// Trạng thái của một học viên trong một buổi học
 public enum TrangThaiDiemDanh {
     CO_MAT("Co mat"),
     VANG_CO_PHEP("Vang co phep"),

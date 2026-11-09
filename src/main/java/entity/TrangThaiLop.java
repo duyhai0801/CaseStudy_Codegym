@@ -1,6 +1,5 @@
 package entity;
 
-// Trạng thái của một lớp học
 public enum TrangThaiLop {
     SAP_KHAI_GIANG("Sap khai giang"),
     DANG_HOC("Dang hoc"),

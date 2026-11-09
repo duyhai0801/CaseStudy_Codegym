@@ -5,11 +5,8 @@ import lib.InputHelper;
 
 import java.time.LocalDate;
 
-// Kiểm tra dữ liệu nhập cho LopHoc
 public class LopHocValidator {
-    // vd "IELTS55-K02"
     private static final String TEN_LOP_REGEX = "^(?=.*[a-zA-Z])[a-zA-Z0-9À-ỹ .\\-]{2,30}$";
-    // vd "T2-T4-T6 18:00-19:30" - không cho dấu phẩy vì file CSV tách cột bằng dấu phẩy
     private static final String LICH_HOC_REGEX = "^[a-zA-Z0-9À-ỹ :\\-/]{3,40}$";
 
     public static String inputTenLop(String giaTriCu) {

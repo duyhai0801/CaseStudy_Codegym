@@ -4,7 +4,6 @@ import lib.InputHelper;
 
 import java.util.regex.Pattern;
 
-// Kiểm tra username và password (giống bài mẫu)
 public class UserValidator {
     public static String inputUsername() {
         String usernameRegex = "^[A-Za-z0-9_]{5,20}$";

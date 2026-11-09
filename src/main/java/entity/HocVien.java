@@ -3,7 +3,6 @@ package entity;
 import java.time.LocalDate;
 import java.time.Period;
 
-// Học viên của trung tâm, kế thừa các thông tin chung từ Nguoi
 public class HocVien extends Nguoi {
     private LocalDate ngaySinh;
     private TrinhDo trinhDoDauVao;

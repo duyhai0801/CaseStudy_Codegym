@@ -1,12 +1,11 @@
 package entity;
 
-// Khóa học = chương trình học (vd "IELTS 5.5"). Một khóa học có thể mở nhiều lớp.
 public class KhoaHoc {
     private long id;
     private String tenKhoaHoc;
     private TrinhDo trinhDo;
     private int soBuoi;
-    private long hocPhi; // VND
+    private long hocPhi;
 
     public KhoaHoc() {
     }

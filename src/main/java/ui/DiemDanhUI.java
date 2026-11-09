@@ -7,46 +7,39 @@ import entity.TrangThaiDiemDanh;
 import entity.TrangThaiLop;
 import lib.FormatHelper;
 import lib.InputHelper;
+import lib.errors.DataNotFoundException;
 import lib.errors.NghiepVuException;
 import service.DangKyService;
 import service.DiemDanhService;
+import service.HocVienService;
 import service.LopHocService;
 import validator.CommonValidator;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-Các màn hình điểm danh, dùng chung cho ADMIN và GIẢNG VIÊN:
-- giangVienId = null  -> admin, được làm việc với MỌI lớp
-- giangVienId = số    -> giảng viên, chỉ được chọn các lớp mình dạy
- */
 public class DiemDanhUI {
     private static final DiemDanhService diemDanhService = DiemDanhService.getObject();
     private static final LopHocService lopHocService = LopHocService.getObject();
     private static final DangKyService dangKyService = DangKyService.getObject();
 
-    // Menu riêng cho admin
     public static void showMainMenu() {
         int choice;
         do {
             System.out.println();
-            System.out.println("====== DIEM DANH & CHUYEN CAN ======");
-            System.out.println("1. Diem danh / cap nhat diem danh mot buoi");
-            System.out.println("2. Xem diem danh mot buoi");
-            System.out.println("3. Tong hop chuyen can cua lop");
+            System.out.println("====== XEM DIEM DANH & CHUYEN CAN ======");
+            System.out.println("1. Xem lich su buoi hoc");
+            System.out.println("2. Tong hop chuyen can cua lop");
             System.out.println("0. Quay lai");
             System.out.println("Nhap lua chon: ");
             choice = InputHelper.inputInt();
             switch (choice) {
                 case 1:
-                    diemDanhUI(null);
-                    break;
-                case 2:
                     xemBuoiHocUI(null);
                     break;
-                case 3:
+                case 2:
                     xemChuyenCanLopUI(null);
                     break;
                 case 0:
@@ -57,7 +50,6 @@ public class DiemDanhUI {
         } while (choice != 0);
     }
 
-    // Các lớp người dùng được phép thao tác
     public static List<LopHoc> layLopDuocQuanLy(Long giangVienId, boolean chiLopDangHoc) {
         List<LopHoc> cacLop;
         if (giangVienId == null) {
@@ -74,7 +66,6 @@ public class DiemDanhUI {
         return ketQua;
     }
 
-    // In danh sách lớp được phép rồi bắt chọn đúng 1 lớp trong đó. Không có lớp nào thì trả về null.
     public static LopHoc chonLop(Long giangVienId, boolean chiLopDangHoc) {
         List<LopHoc> cacLop = layLopDuocQuanLy(giangVienId, chiLopDangHoc);
         if (cacLop.isEmpty()) {
@@ -86,9 +77,12 @@ public class DiemDanhUI {
             return null;
         }
         LopHocUI.inDanhSach(cacLop);
-        System.out.println("Nhap id lop: ");
+        System.out.println("Nhap id lop (0 de quay lai): ");
         while (true) {
             long id = InputHelper.inputLong();
+            if (id == 0) {
+                return null;
+            }
             for (LopHoc item : cacLop) {
                 if (item.getId() == id) {
                     return item;
@@ -98,7 +92,7 @@ public class DiemDanhUI {
         }
     }
 
-    public static void diemDanhUI(Long giangVienId) {
+    public static void diemDanhUI(long giangVienId) {
         System.out.println("====== Diem danh ======");
         LopHoc lop = chonLop(giangVienId, true);
         if (lop == null) {
@@ -111,6 +105,14 @@ public class DiemDanhUI {
         } catch (NghiepVuException e) {
             System.out.println("Khong the diem danh: " + e.getMessage());
             return;
+        }
+        if (!diemDanhService.laNgayCoLich(lop, ngay)) {
+            System.out.println("Ngay " + FormatHelper.formatDate(ngay) + " (" + tenThu(ngay.getDayOfWeek())
+                    + ") khong co trong lich hoc cua lop (" + lop.getLichHoc() + ").");
+            System.out.println("Day la buoi hoc bu? Van diem danh? (y/n)");
+            if (!InputHelper.inputYesNo()) {
+                return;
+            }
         }
         if (diemDanhService.daDiemDanh(lop.getId(), ngay)) {
             System.out.println("Buoi " + FormatHelper.formatDate(ngay) + " da duoc diem danh. Cap nhat lai? (y/n)");
@@ -144,7 +146,7 @@ public class DiemDanhUI {
     }
 
     public static void xemBuoiHocUI(Long giangVienId) {
-        System.out.println("====== Xem diem danh mot buoi ======");
+        System.out.println("====== Xem lich su buoi hoc ======");
         LopHoc lop = chonLop(giangVienId, false);
         if (lop == null) {
             return;
@@ -158,8 +160,11 @@ public class DiemDanhUI {
         for (int i = 0; i < cacNgay.size(); i++) {
             System.out.println("  " + (i + 1) + ". " + FormatHelper.formatDate(cacNgay.get(i)));
         }
-        System.out.println("Chon buoi (Enter = buoi gan nhat): ");
-        int luaChon = CommonValidator.inputIntInRange(1, cacNgay.size(), cacNgay.size());
+        System.out.println("Chon buoi (0 de quay lai): ");
+        int luaChon = CommonValidator.inputIntInRange(0, cacNgay.size(), null);
+        if (luaChon == 0) {
+            return;
+        }
         LocalDate ngay = cacNgay.get(luaChon - 1);
 
         System.out.println("Lop " + lop.getTenLop() + " - buoi " + FormatHelper.formatDate(ngay) + ":");
@@ -180,25 +185,56 @@ public class DiemDanhUI {
         }
         int soBuoi = diemDanhService.layCacNgayDaDiemDanh(lop.getId()).size();
         System.out.println("Lop " + lop.getTenLop() + " - da diem danh " + soBuoi + " buoi:");
-        String format = "%-11s| %-20s| %-7s| %-8s| %-8s| %-7s| %s%n";
-        System.out.printf(format, "ID HV", "Hoc vien", "Co mat", "Vang CP", "Vang KP", "Ti le", "Ghi chu");
-        FormatHelper.printLine(100);
+        String format = "%-11s| %-20s| %-11s| %-7s| %-7s| %-8s| %-8s| %-7s| %s%n";
+        System.out.printf(format, "ID HV", "Hoc vien", "SDT", "So buoi", "Co mat", "Vang CP", "Vang KP",
+                "Ti le", "Ghi chu");
+        FormatHelper.printLine(125);
         for (DangKy item : dangKyService.layDangKyCuaLop(lop.getId())) {
             long hocVienId = item.getHocVienId();
+            int soBuoiCuaHocVien = diemDanhService.demSoBuoiCuaHocVien(lop.getId(), hocVienId);
             double tiLe = diemDanhService.tinhTiLeChuyenCan(lop.getId(), hocVienId);
             String ghiChu = "";
-            if (soBuoi > 0 && tiLe < DiemDanhService.TI_LE_CHUYEN_CAN_TOI_THIEU) {
+            if (soBuoiCuaHocVien == 0) {
+                ghiChu = "Chua co buoi nao";
+            } else if (tiLe < DiemDanhService.TI_LE_CHUYEN_CAN_TOI_THIEU) {
                 ghiChu = "Vang nhieu - can nhac nho";
             }
-            System.out.printf(format, hocVienId, HocVienUI.layTenHocVien(hocVienId),
+            System.out.printf(format, hocVienId, HocVienUI.layTenHocVien(hocVienId), layDienThoai(hocVienId),
+                    soBuoiCuaHocVien,
                     diemDanhService.demTheoTrangThai(lop.getId(), hocVienId, TrangThaiDiemDanh.CO_MAT),
                     diemDanhService.demTheoTrangThai(lop.getId(), hocVienId, TrangThaiDiemDanh.VANG_CO_PHEP),
                     diemDanhService.demTheoTrangThai(lop.getId(), hocVienId, TrangThaiDiemDanh.VANG_KHONG_PHEP),
-                    hienThiTiLe(soBuoi, tiLe), ghiChu);
+                    hienThiTiLe(soBuoiCuaHocVien, tiLe), ghiChu);
         }
     }
 
-    // Lớp chưa điểm danh buổi nào thì in "-" thay vì tỉ lệ
+    private static String layDienThoai(long hocVienId) {
+        try {
+            return HocVienService.getObject().findById(hocVienId).getSoDienThoai();
+        } catch (DataNotFoundException e) {
+            return "-";
+        }
+    }
+
+    public static String tenThu(DayOfWeek thu) {
+        switch (thu) {
+            case MONDAY:
+                return "Thu 2";
+            case TUESDAY:
+                return "Thu 3";
+            case WEDNESDAY:
+                return "Thu 4";
+            case THURSDAY:
+                return "Thu 5";
+            case FRIDAY:
+                return "Thu 6";
+            case SATURDAY:
+                return "Thu 7";
+            default:
+                return "Chu nhat";
+        }
+    }
+
     private static String hienThiTiLe(int soBuoi, double tiLe) {
         if (soBuoi == 0) {
             return "-";
@@ -206,7 +242,6 @@ public class DiemDanhUI {
         return String.format("%.0f%%", tiLe);
     }
 
-    // Dành cho học viên: chuyên cần của chính mình ở tất cả các lớp đã đăng ký
     public static void xemChuyenCanCuaHocVienUI(long hocVienId) {
         System.out.println("====== Chuyen can cua toi ======");
         List<DangKy> cacDangKy = dangKyService.layDangKyCuaHocVien(hocVienId);
@@ -219,7 +254,7 @@ public class DiemDanhUI {
         FormatHelper.printLine(65);
         for (DangKy item : cacDangKy) {
             long lopHocId = item.getLopHocId();
-            int soBuoi = diemDanhService.layCacNgayDaDiemDanh(lopHocId).size();
+            int soBuoi = diemDanhService.demSoBuoiCuaHocVien(lopHocId, hocVienId);
             System.out.printf(format, LopHocUI.layTenLop(lopHocId), soBuoi,
                     diemDanhService.demTheoTrangThai(lopHocId, hocVienId, TrangThaiDiemDanh.CO_MAT),
                     diemDanhService.demTheoTrangThai(lopHocId, hocVienId, TrangThaiDiemDanh.VANG_CO_PHEP),

@@ -5,8 +5,6 @@ import lib.InputHelper;
 import service.UserService;
 import validator.UserValidator;
 
-// Màn hình đầu tiên: chỉ có ĐĂNG NHẬP. Không cho tự đăng ký - tài khoản do admin cấp.
-// Đăng nhập xong thì chuyển tới menu tương ứng với vai trò của tài khoản.
 public class AuthUI {
     private static final UserService userService = UserService.getObject();
 
@@ -35,7 +33,6 @@ public class AuthUI {
 
     public static void loginUI() {
         System.out.println("=========== Dang nhap ==========");
-        // Đăng nhập không kiểm tra regex (vd mật khẩu admin mặc định là "admin"), chỉ so khớp với dữ liệu
         System.out.println("Nhap username: ");
         String username = InputHelper.inputString();
         System.out.println("Nhap password: ");
@@ -61,7 +58,6 @@ public class AuthUI {
         }
     }
 
-    // Dùng chung cho cả 3 vai trò
     public static void doiMatKhauUI(User user) {
         System.out.println("====== Doi mat khau ======");
         System.out.println("Nhap mat khau hien tai: ");

@@ -2,7 +2,6 @@ package entity;
 
 import java.time.LocalDate;
 
-// Một dòng điểm danh: học viên X, ở lớp Y, vào ngày Z, có mặt hay vắng
 public class DiemDanh {
     private long id;
     private long lopHocId;

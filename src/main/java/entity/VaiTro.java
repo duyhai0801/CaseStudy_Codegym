@@ -1,6 +1,5 @@
 package entity;
 
-// Vai trò của tài khoản đăng nhập, quyết định người dùng thấy menu nào
 public enum VaiTro {
     ADMIN("Quan tri vien"),
     GIANG_VIEN("Giang vien"),

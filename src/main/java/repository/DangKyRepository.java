@@ -8,8 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Đọc/ghi data/dangky.csv.
-// Mỗi dòng: id,hocVienId,lopHocId,ngayDangKy(yyyy-MM-dd),hocPhiPhaiDong,soTienDaDong
 public class DangKyRepository implements IRepository<DangKy> {
     private static final String FILE_NAME = "data/dangky.csv";
 

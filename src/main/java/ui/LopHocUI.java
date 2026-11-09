@@ -15,7 +15,6 @@ import validator.LopHocValidator;
 import java.time.LocalDate;
 import java.util.List;
 
-// Menu quản lý lớp học: CRUD, xem học viên của lớp, lọc lớp, sắp xếp theo ngày khai giảng
 public class LopHocUI {
     private static final LopHocService lopHocService = LopHocService.getObject();
     private static final DangKyService dangKyService = DangKyService.getObject();
@@ -80,8 +79,16 @@ public class LopHocUI {
         String tenLop = LopHocValidator.inputTenLop(null);
         System.out.println("--- Chon khoa hoc ---");
         long khoaHocId = KhoaHocUI.chonKhoaHocId(null);
+        if (khoaHocId == 0) {
+            System.out.println("Da huy mo lop.");
+            return;
+        }
         System.out.println("--- Chon giang vien ---");
         long giangVienId = GiangVienUI.chonGiangVienId(null);
+        if (giangVienId == 0) {
+            System.out.println("Da huy mo lop.");
+            return;
+        }
         System.out.println("Nhap lich hoc (vd T2-T4-T6 18:00-19:30): ");
         String lichHoc = LopHocValidator.inputLichHoc(null);
         System.out.println("Nhap ngay khai giang (dd/MM/yyyy): ");
@@ -101,8 +108,11 @@ public class LopHocUI {
 
     public static void editUI() {
         System.out.println("====== Sua lop ======");
-        System.out.println("Nhap id lop can sua: ");
+        System.out.println("Nhap id lop can sua (0 de quay lai): ");
         long id = InputHelper.inputLong();
+        if (id == 0) {
+            return;
+        }
         try {
             LopHoc cu = lopHocService.findById(id);
             System.out.println("(Nhan Enter de giu gia tri cu)");
@@ -110,8 +120,16 @@ public class LopHocUI {
             String tenLop = LopHocValidator.inputTenLop(cu.getTenLop());
             System.out.println("--- Khoa hoc [" + KhoaHocUI.layTenKhoaHoc(cu.getKhoaHocId()) + "] ---");
             long khoaHocId = KhoaHocUI.chonKhoaHocId(cu.getKhoaHocId());
+            if (khoaHocId == 0) {
+                System.out.println("Da huy, lop khong thay doi.");
+                return;
+            }
             System.out.println("--- Giang vien [" + GiangVienUI.layTenGiangVien(cu.getGiangVienId()) + "] ---");
             long giangVienId = GiangVienUI.chonGiangVienId(cu.getGiangVienId());
+            if (giangVienId == 0) {
+                System.out.println("Da huy, lop khong thay doi.");
+                return;
+            }
             System.out.println("Lich hoc [" + cu.getLichHoc() + "]: ");
             String lichHoc = LopHocValidator.inputLichHoc(cu.getLichHoc());
             System.out.println("Ngay khai giang [" + FormatHelper.formatDate(cu.getNgayKhaiGiang()) + "]: ");
@@ -132,8 +150,11 @@ public class LopHocUI {
 
     public static void deleteUI() {
         System.out.println("====== Xoa lop ======");
-        System.out.println("Nhap id lop can xoa: ");
+        System.out.println("Nhap id lop can xoa (0 de quay lai): ");
         long id = InputHelper.inputLong();
+        if (id == 0) {
+            return;
+        }
         try {
             LopHoc lopHoc = lopHocService.findById(id);
             System.out.println("Ban co chac muon xoa lop '" + lopHoc.getTenLop() + "'? (y/n)");
@@ -155,12 +176,18 @@ public class LopHocUI {
 
     public static void xemHocVienCuaLopUI() {
         long lopHocId = chonLopHocId();
+        if (lopHocId == 0) {
+            return;
+        }
         System.out.println("Hoc vien cua lop " + layTenLop(lopHocId) + ":");
         DangKyUI.inDanhSach(dangKyService.layDangKyCuaLop(lopHocId));
     }
 
     public static void locTheoKhoaHocUI() {
         long khoaHocId = KhoaHocUI.chonKhoaHocId(null);
+        if (khoaHocId == 0) {
+            return;
+        }
         inDanhSach(lopHocService.locTheoKhoaHoc(khoaHocId));
     }
 
@@ -189,9 +216,12 @@ public class LopHocUI {
 
     public static long chonLopHocId() {
         inDanhSach(lopHocService.getAll());
-        System.out.println("Nhap id lop: ");
+        System.out.println("Nhap id lop (0 de quay lai): ");
         while (true) {
             long id = InputHelper.inputLong();
+            if (id == 0) {
+                return 0;
+            }
             try {
                 lopHocService.findById(id);
                 return id;

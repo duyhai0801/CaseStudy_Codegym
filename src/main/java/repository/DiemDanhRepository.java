@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Đọc/ghi data/diemdanh.csv. Mỗi dòng: id,lopHocId,hocVienId,ngay(yyyy-MM-dd),trangThai
 public class DiemDanhRepository implements IRepository<DiemDanh> {
     private static final String FILE_NAME = "data/diemdanh.csv";
 

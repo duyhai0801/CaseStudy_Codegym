@@ -2,14 +2,12 @@ package entity;
 
 import java.time.LocalDate;
 
-// Một lượt đăng ký: "học viên X học lớp Y".
-// Đây là entity trung gian cho quan hệ n-n giữa HocVien và LopHoc.
 public class DangKy {
     private long id;
     private long hocVienId;
     private long lopHocId;
     private LocalDate ngayDangKy;
-    private long hocPhiPhaiDong; // chốt lúc đăng ký (đã trừ giảm giá), khóa có đổi giá cũng không ảnh hưởng
+    private long hocPhiPhaiDong;
     private long soTienDaDong;
 
     public DangKy() {
@@ -29,7 +27,6 @@ public class DangKy {
         return hocPhiPhaiDong - soTienDaDong;
     }
 
-    // Trạng thái không lưu vào file mà tính ra từ 2 con số, nên luôn đúng với số tiền thực tế
     public TrangThaiHocPhi layTrangThaiHocPhi() {
         if (soTienDaDong == 0) {
             return TrangThaiHocPhi.CHUA_DONG;

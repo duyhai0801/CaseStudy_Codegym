@@ -8,10 +8,10 @@ import lib.errors.DataNotFoundException;
 import lib.errors.NghiepVuException;
 import repository.LopHocRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Nghiệp vụ của lớp học: CRUD có kiểm tra khóa ngoại, lọc lớp, sắp xếp theo ngày khai giảng.
 public class LopHocService implements IService<LopHoc> {
     private LopHocRepository lopHocRepository = new LopHocRepository();
     private List<LopHoc> list;
@@ -25,8 +25,6 @@ public class LopHocService implements IService<LopHoc> {
         return lopHocService;
     }
 
-    // id = số giây hiện tại (giống bài mẫu: currentTimeMillis() / 1000).
-    // Bài mẫu bị trùng id nếu thêm 2 bản ghi trong cùng 1 giây, nên ở đây gặp id đã có thì cộng thêm 1.
     public long taoIdMoi() {
         long id = System.currentTimeMillis() / 1000;
         while (daCoId(id)) {
@@ -44,7 +42,6 @@ public class LopHocService implements IService<LopHoc> {
         return false;
     }
 
-    // khoaHocId và giangVienId phải trỏ tới dữ liệu có thật
     private void kiemTraKhoaNgoai(LopHoc lop) {
         try {
             KhoaHocService.getObject().findById(lop.getKhoaHocId());
@@ -84,7 +81,6 @@ public class LopHocService implements IService<LopHoc> {
         if (lopMoi.getSiSoToiDa() < siSoHienTai) {
             throw new NghiepVuException("Lop dang co " + siSoHienTai + " hoc vien, si so toi da khong duoc nho hon.");
         }
-        // Học phí của các đăng ký đã chốt theo khóa cũ, nên lớp có học viên rồi thì không cho đổi khóa
         if (siSoHienTai > 0 && lopCu.getKhoaHocId() != lopMoi.getKhoaHocId()) {
             throw new NghiepVuException("Lop da co hoc vien dang ky, khong the doi sang khoa hoc khac.");
         }
@@ -113,6 +109,27 @@ public class LopHocService implements IService<LopHoc> {
         return this.list.get(index);
     }
 
+    public void batDauLop(long lopHocId) {
+        LopHoc lop = this.findById(lopHocId);
+        if (lop.getTrangThai() != TrangThaiLop.SAP_KHAI_GIANG) {
+            throw new NghiepVuException("Lop " + lop.getTenLop() + " khong o trang thai sap khai giang.");
+        }
+        if (lop.getNgayKhaiGiang().isAfter(LocalDate.now())) {
+            throw new NghiepVuException("Chua toi ngay khai giang cua lop " + lop.getTenLop() + ".");
+        }
+        lop.setTrangThai(TrangThaiLop.DANG_HOC);
+        this.lopHocRepository.write(list);
+    }
+
+    public void ketThucLop(long lopHocId) {
+        LopHoc lop = this.findById(lopHocId);
+        if (lop.getTrangThai() != TrangThaiLop.DANG_HOC) {
+            throw new NghiepVuException("Chi ket thuc duoc lop dang hoc.");
+        }
+        lop.setTrangThai(TrangThaiLop.DA_KET_THUC);
+        this.lopHocRepository.write(list);
+    }
+
     public boolean coLopThuocKhoaHoc(long khoaHocId) {
         for (LopHoc item : list) {
             if (item.getKhoaHocId() == khoaHocId) {
@@ -135,7 +152,6 @@ public class LopHocService implements IService<LopHoc> {
         return lop.getSiSoToiDa() - DangKyService.getObject().demSoHocVienCuaLop(lop.getId());
     }
 
-    // Lớp còn nhận học viên: chưa kết thúc và chưa đủ sĩ số
     public List<LopHoc> locLopConCho() {
         List<LopHoc> ketQua = new ArrayList<>();
         for (LopHoc item : list) {
@@ -166,7 +182,6 @@ public class LopHocService implements IService<LopHoc> {
         return ketQua;
     }
 
-    // Trình độ nằm ở KhoaHoc, nên phải đi từ lớp -> khóa học rồi mới so sánh
     public List<LopHoc> locTheoTrinhDo(TrinhDo trinhDo) {
         List<LopHoc> ketQua = new ArrayList<>();
         for (LopHoc item : list) {

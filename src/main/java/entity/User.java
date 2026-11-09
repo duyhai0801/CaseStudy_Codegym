@@ -1,12 +1,10 @@
 package entity;
 
-// Tài khoản đăng nhập. Tài khoản giảng viên / học viên gắn với một người cụ thể qua nguoiId.
 public class User {
     private long id;
     private String username;
     private String password;
     private VaiTro vaiTro;
-    // id của GiangVien (nếu vaiTro = GIANG_VIEN) hoặc HocVien (nếu vaiTro = HOC_VIEN). ADMIN thì = 0.
     private long nguoiId;
 
     public User() {

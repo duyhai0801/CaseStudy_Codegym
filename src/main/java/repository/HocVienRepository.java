@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Đọc/ghi data/hocvien.csv. Mỗi dòng: id,hoTen,soDienThoai,email,ngaySinh(yyyy-MM-dd),trinhDoDauVao
 public class HocVienRepository implements IRepository<HocVien> {
     private static final String FILE_NAME = "data/hocvien.csv";
 
@@ -45,7 +44,7 @@ public class HocVienRepository implements IRepository<HocVien> {
                 String hoTen = data[1];
                 String soDienThoai = data[2];
                 String email = data[3];
-                LocalDate ngaySinh = LocalDate.parse(data[4]); // "2004-03-15" -> LocalDate
+                LocalDate ngaySinh = LocalDate.parse(data[4]);
                 TrinhDo trinhDoDauVao = TrinhDo.valueOf(data[5]);
                 list.add(new HocVien(id, hoTen, soDienThoai, email, ngaySinh, trinhDoDauVao));
             }

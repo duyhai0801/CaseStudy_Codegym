@@ -2,9 +2,23 @@
 
 ## Chuẩn bị
 
-- **Reset dữ liệu trước khi demo:** xóa thư mục `data`, copy thư mục `data_mau` rồi đổi tên bản copy thành `data`. Kịch bản dưới đây dùng dữ liệu mẫu ban đầu: học viên id 12 là *Ly Mai Phuong*, chưa đăng ký lớp nào và chưa có tài khoản.
+- **Reset dữ liệu trước khi demo:** xóa thư mục `data`, copy thư mục `data_mau` rồi đổi tên bản copy thành `data`. Kịch bản dưới đây dùng dữ liệu mẫu ban đầu.
+- **id mẫu cần dùng** (id là số 10 chữ số, nên copy từ đây hoặc từ bảng trong Terminal):
+
+| Đối tượng | id |
+|---|---|
+| Học viên *Ly Mai Phuong* (chưa đăng ký lớp nào, chưa có tài khoản) | `6654192463` |
+| Học viên *Nguyen Minh Tuan* | `6175858811` |
+| Khóa học *Giao tiep co ban* | `1788863335` |
+| Lớp GT-K01 (đang học, của cô Minh Anh) | `8014946297` |
+| Lớp GT-K02 (sắp khai giảng, của cô Minh Anh) | `4291129747` |
+| Lớp TOEIC-K01 (đang học, của thầy David) | `2980189196` |
+| Lớp IELTS55-K01 (đã kết thúc) | `6102505113` |
+| Lớp IELTS55-K02 (sắp khai giảng) | `1343100656` |
+| Lớp IELTS70-K01 (đã đầy 5/5) | `3949671471` |
+
 - Mã đăng ký mới là số dài 10 chữ số. Khi cần nhập lại, bôi đen mã trong bảng ở Terminal, nhấn `Ctrl+C`, rồi bấm chuột phải vào Terminal để dán, khỏi gõ sai.
-- Lớp GT-K01 học thứ 2-4-6. Nếu hôm demo không phải ngày có lịch thì ở bước 13 vẫn nhấn Enter (điểm danh hôm nay) được, chương trình không kiểm tra thứ.
+- Lớp GT-K01 học thứ 2-4-6. Nếu hôm demo không phải T2, T4 hay T6 thì ở bước 16 chương trình sẽ cảnh báo ngày không có trong lịch học và hỏi có phải buổi học bù không: nhập `y` để tiếp tục.
 
 ## Phần A: Quản trị viên và nghiệp vụ chính
 
@@ -12,13 +26,13 @@
 |---|---|---|---|
 | 1 | 1 Đăng nhập → `admin` / `admin` | Vào menu QUAN TRI VIEN | Màn hình đầu chỉ có đăng nhập, không ai tự đăng ký được |
 | 2 | 6 Thống kê → 1, rồi 3 | Tổng quan học phí. Bảng sĩ số: IELTS70-K01 đầy **5/5** | Cho người xem nắm tổng quan dữ liệu |
-| 3 | 0 → 5 Đăng ký → 1 → học viên **12** → lớp **6** | *Lop IELTS70-K01 da du si so (5/5)* | Lớp đầy thì chặn |
-| 4 | 1 → học viên 12 → lớp **4** | *Lop IELTS55-K01 da ket thuc* | Lớp đã kết thúc thì chặn |
-| 5 | 1 → học viên 12 → lớp **2** | Thành công, 3,600,000. Mã đăng ký là số giây hiện tại | Đăng ký lần đầu, trả giá gốc. id theo thời gian thực |
-| 6 | 1 → học viên 12 → lớp **5** | Thành công, **6,480,000** (giảm 10%) | Học viên cũ được giảm 10%, học phí chốt vào `DangKy` |
-| 7 | 3 Đóng học phí → học viên 12 → mã đăng ký lớp GT-K02 → `5000000` | *So tien vuot qua so con no* | Không cho đóng quá số đang nợ |
-| 8 | 3 → học viên 12 → cùng mã → `1000000` | Còn nợ 2,600,000 (Dong mot phan) | Trạng thái học phí **tính ra** từ số tiền, không lưu vào file |
-| 9 | 0 → 1 Khóa học → 3 Xóa → id **1** → y | *Khoa hoc dang co lop hoc, khong the xoa* | Sửa lỗi bài mẫu (xóa category làm crash) |
+| 3 | 0 → 5 Đăng ký → 1 → học viên `6654192463` → lớp `3949671471` | *Lop IELTS70-K01 da du si so (5/5)* | Lớp đầy thì chặn |
+| 4 | 1 → học viên `6654192463` → lớp `6102505113` | *Lop IELTS55-K01 da ket thuc* | Lớp đã kết thúc thì chặn |
+| 5 | 1 → học viên `6654192463` → lớp `4291129747` | Thành công, 3,600,000. Mã đăng ký là số giây hiện tại | Đăng ký lần đầu, trả giá gốc. id theo thời gian thực |
+| 6 | 1 → học viên `6654192463` → lớp `1343100656` | Thành công, **6,480,000** (giảm 10%) | Học viên cũ được giảm 10%, học phí chốt vào `DangKy` |
+| 7 | 3 Đóng học phí → học viên `6654192463` → mã đăng ký lớp GT-K02 → `5000000` | *So tien vuot qua so con no* | Không cho đóng quá số đang nợ |
+| 8 | 3 → học viên `6654192463` → cùng mã → `1000000` | Còn nợ 2,600,000 (Dong mot phan) | Trạng thái học phí **tính ra** từ số tiền, không lưu vào file |
+| 9 | 0 → 1 Khóa học → 3 Xóa → id `1788863335` → y | *Khoa hoc dang co lop hoc, khong the xoa* | Sửa lỗi bài mẫu (xóa category làm crash) |
 | 10 | 0 → 4 Học viên → 7 Sắp xếp theo tên | Anh, Bao, Chau, Duc… | So sánh **chữ cuối** của họ tên |
 
 ## Phần B: Phân quyền
@@ -26,14 +40,20 @@
 | # | Thao tác (menu → nhập) | Kết quả mong đợi | Nói gì khi demo |
 |---|---|---|---|
 | 11 | 0 → 8 Quản lý tài khoản → 2 | Danh sách 5 tài khoản, không hiện mật khẩu | 3 vai trò: quản trị viên, giảng viên, học viên |
-| 12 | 1 Cấp tài khoản → 2 (Học viên) → học viên **12** → `maiphuong` / `phuong123` | *Da cap tai khoan... Hay gui cho ho...* | Chỉ admin cấp tài khoản, gắn với học viên có sẵn qua `nguoiId` |
-| 13 | 1 → 2 → học viên **1** | *Nguoi nay da co tai khoan (username: minhtuan)* | Mỗi người chỉ 1 tài khoản |
+| 12 | 1 Cấp tài khoản → 2 (Học viên) → 2 (chọn có sẵn) → học viên `6654192463` → `maiphuong` / `phuong123` | *Da tao tai khoan... Hay gui cho ho...* kèm danh sách quyền hạn | Chỉ admin tạo tài khoản, gắn với học viên qua `nguoiId` |
+| 13 | 1 → 2 → 2 → học viên `6175858811` | *Nguoi nay da co tai khoan (username: minhtuan)* | Mỗi người chỉ 1 tài khoản |
+| 13b | 5 Xem quyền hạn của từng vai trò | Quyền của quản trị viên, giảng viên, học viên | Phân quyền rõ ràng cho từng vai trò |
+| 13c | 0 → 4 Học viên → 1 Thêm: `Vo Minh Khang`, `0933444555`, `khang@gmail.com`, `03/03/2003`, 1 → username `minhkhang` / `khang123` | *Da them hoc vien* rồi *Da tao tai khoan...* | Thêm học viên mới là tạo luôn tài khoản để đưa cho họ |
 | 14 | 0 → 0 Đăng xuất → 1 → `minhanh` / `minhanh123` | Vào menu GIANG VIEN: Tran Minh Anh | Đăng nhập xong tự vào menu theo vai trò |
-| 15 | 3 Học viên và học phí → lớp **3** | *Chi duoc chon lop trong danh sach* (lớp 3 không phải của cô) → nhập **1** | Giảng viên chỉ thấy lớp mình dạy. Xem được ai đã đóng học phí |
-| 16 | 4 Điểm danh → lớp 1 → Enter (hôm nay) → Enter, Enter, `3`, Enter | *Da luu diem danh... 3/4 co mat* | Enter = có mặt, 3 = vắng không phép |
-| 17 | 6 Tổng hợp chuyên cần → lớp 1 | Le Hoang Bao bị đánh dấu *Vang nhieu - can nhac nho* | Tỉ lệ có mặt dưới 80% thì cảnh báo |
+| 15 | 3 Học viên và học phí → lớp `2980189196` | *Chi duoc chon lop trong danh sach* (lớp TOEIC-K01 không phải của cô) → nhập `8014946297` | Giảng viên chỉ thấy lớp mình dạy. Xem được ai đã đóng học phí |
+| 16 | 4 Điểm danh → lớp `8014946297` → Enter (hôm nay) → Enter, Enter, `3`, Enter | *Da luu diem danh... 3/4 co mat* | Enter = có mặt, 3 = vắng không phép |
+| 17 | 6 Tổng hợp chuyên cần → lớp `8014946297` | Le Hoang Bao bị đánh dấu *Vang nhieu - can nhac nho*, có SĐT để gọi nhắc | Tỉ lệ có mặt dưới 80% thì cảnh báo. Tỉ lệ tính trên số buổi của từng học viên |
+| 17b | 7 Bắt đầu lớp → lớp `4291129747` | *Chua toi ngay khai giang cua lop GT-K02* | Giảng viên tự mở lớp được, nhưng phải tới ngày khai giảng |
 | 18 | 0 Đăng xuất → 1 → `minhtuan` / `tuan12345` | Vào menu HOC VIEN: Nguyen Minh Tuan | |
-| 19 | 3 Học phí của tôi, rồi 4 Chuyên cần | Còn nợ 8,820,000. Bảng chuyên cần và các buổi vắng | Học viên chỉ xem được dữ liệu của mình, không sửa được gì |
+| 19 | 3 Học phí của tôi, rồi 4 Chuyên cần | Còn nợ 8,820,000. Bảng chuyên cần và các buổi vắng | Học viên chỉ xem được dữ liệu của mình |
+| 19b | 6 Đăng ký lớp → lớp `3949671471` → y | *Lop IELTS70-K01 da du si so* | Học viên tự đăng ký vẫn qua đủ các bước kiểm tra |
+| 19c | 6 → lớp `4291129747` → y | Thành công, **3,240,000** (giảm 10%), nhắc đóng tiền trước ngày khai giảng | Dùng chung `dangKyVaoLop()` với admin |
+| 19d | 7 Hủy đăng ký → mã vừa tạo → y | *Da huy dang ky!* | Chỉ hủy được của mình, lớp còn sắp khai giảng |
 | 20 | 0 → 1 → `maiphuong` / `phuong123` → 3 | Thấy 2 lớp vừa đăng ký ở phần A, còn nợ 9,080,000 | Tài khoản vừa được cấp ở bước 12 dùng được ngay |
 
 ## Câu hỏi phỏng vấn hay gặp
@@ -44,11 +64,20 @@ Mỗi tầng làm một việc riêng. Ví dụ muốn đổi từ file CSV sang
 **Phân quyền làm thế nào?**
 `User` có thêm `vaiTro` (enum `VaiTro`: ADMIN, GIANG_VIEN, HOC_VIEN) và `nguoiId`. `AuthUI.loginUI()` đăng nhập xong thì `switch (user.getVaiTro())` để mở `MainUI`, `GiangVienMenuUI` hoặc `HocVienMenuUI`. Mỗi menu chỉ có những chức năng của vai trò đó.
 
+**id ở đây là số gì?**
+Mọi id là số 10 chữ số. Dữ liệu mẫu dùng id ngẫu nhiên 10 chữ số; bản ghi thêm mới thì lấy số giây thời gian thực (`currentTimeMillis() / 1000`), trùng thì cộng 1. Các bảng liên kết với nhau bằng đúng các id này.
+
+**Thêm giảng viên / học viên thì tài khoản được tạo thế nào? Xóa người thì sao?**
+`GiangVienUI.addUI()` và `HocVienUI.addUI()` thêm người xong thì gọi `TaiKhoanUI.taoTaiKhoanChoNguoi(vaiTro, id)`: nhập username (trùng thì bắt nhập lại), nhập password, rồi tạo `User` có `vaiTro` và `nguoiId` là id người vừa thêm. Khi xóa người, `GiangVienService.delete()` / `HocVienService.delete()` gọi `UserService.xoaTaiKhoanCua()` để xóa luôn tài khoản, không để tài khoản "mồ côi".
+
 **Làm sao biết tài khoản giảng viên là giảng viên nào?**
-Qua `nguoiId`. Tài khoản `minhanh` có `nguoiId = 1`, nên `GiangVienMenuUI` gọi `giangVienService.findById(1)`, rồi `lopHocService.locTheoGiangVien(1)` để chỉ lấy lớp của giảng viên đó. Khi chọn lớp, `DiemDanhUI.chonLop()` chỉ chấp nhận id nằm trong danh sách lớp của giảng viên.
+Qua `nguoiId`. Tài khoản `minhanh` có `nguoiId = 1783209919`, nên `GiangVienMenuUI` gọi `giangVienService.findById(1783209919)`, rồi `lopHocService.locTheoGiangVien(1783209919)` để chỉ lấy lớp của giảng viên đó. Khi chọn lớp, `DiemDanhUI.chonLop()` chỉ chấp nhận id nằm trong danh sách lớp của giảng viên.
 
 **Vì sao đăng nhập không kiểm tra regex mật khẩu?**
 Regex là luật cho mật khẩu **mới**. Lúc đăng nhập chỉ cần so khớp với dữ liệu đã lưu. Nếu đăng nhập cũng kiểm tra regex thì mật khẩu mặc định `admin` (không có số) sẽ không bao giờ đăng nhập được.
+
+**Ai được điểm danh?**
+Chỉ giảng viên dạy lớp đó. `DiemDanhUI.diemDanhUI(giangVienId)` chỉ cho chọn lớp của giảng viên đang đăng nhập. Menu của admin (`DiemDanhUI.showMainMenu()`) chỉ còn *xem lịch sử buổi học* và *tổng hợp chuyên cần*: tách quyền, ai dạy người đó điểm danh, admin theo dõi.
 
 **Điểm danh lưu thế nào? Cập nhật điểm danh làm sao?**
 Mỗi học viên trong mỗi buổi là 1 dòng `DiemDanh` (lớp, học viên, ngày, trạng thái). Khi lưu một buổi, `DiemDanhService.luuDiemDanhBuoi()` xóa hết các dòng cũ của buổi đó (cùng lớp, cùng ngày) rồi thêm các dòng mới. Nhờ vậy "điểm danh" và "cập nhật điểm danh" dùng chung một hàm. Vòng xóa duyệt **ngược** từ cuối list để xóa phần tử mà không bị lệch chỉ số.
@@ -79,6 +108,15 @@ Có hai lý do. Thứ nhất, khóa học có thể đổi giá sau này. Thứ 
 
 **Vì sao `InputHelper` dùng `nextLine()` rồi mới parse?**
 `nextInt()` không đọc ký tự xuống dòng, nên lệnh `nextLine()` ngay sau đó bị "trôi". Đọc cả dòng rồi `parseInt` thì tránh được lỗi này, và bắt được `NumberFormatException` để cho nhập lại.
+
+**Học viên vào lớp muộn thì tỉ lệ chuyên cần tính sao?**
+Tỉ lệ = số buổi có mặt / số buổi **của chính học viên đó** (`DiemDanhService.demSoBuoiCuaHocVien()`), không chia cho tổng số buổi của lớp. Học viên mới vào chưa có buổi nào thì hiện "Chua co buoi nao" thay vì 0%.
+
+**Điểm danh sai ngày thì sao?**
+`DiemDanhService.laNgayCoLich()` tách chuỗi lịch học (vd `T2-T4-T6 18:00-19:30`) thành các thứ trong tuần rồi so với thứ của ngày điểm danh. Không khớp thì cảnh báo, giảng viên xác nhận là buổi học bù thì vẫn lưu.
+
+**Chọn nhầm chức năng thì thoát ra sao?**
+Ở mọi chỗ nhập id đều có `(0 de quay lai)`. Các hàm chọn như `HocVienUI.chonHocVienId()` gặp `0` thì trả về `0`, nơi gọi kiểm tra `if (hocVienId == 0) return;`. Hàm trả về object như `DiemDanhUI.chonLop()` thì trả `null`. Không lo trùng vì id thật luôn có 10 chữ số.
 
 **Hạn chế còn lại / hướng phát triển?**
 - Mật khẩu đang lưu dạng chữ thường trong `users.csv`. Bản thật nên mã hóa (hash) mật khẩu.

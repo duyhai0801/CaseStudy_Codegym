@@ -2,8 +2,6 @@ package entity;
 
 import java.time.LocalDate;
 
-// Lớp học = một đợt mở cụ thể của một khóa học, do một giảng viên dạy.
-// Liên kết sang KhoaHoc và GiangVien bằng id (giống Product giữ categoryId trong bài mẫu).
 public class LopHoc {
     private long id;
     private String tenLop;

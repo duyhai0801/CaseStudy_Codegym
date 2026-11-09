@@ -9,7 +9,6 @@ import repository.HocVienRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-// Nghiệp vụ của học viên: CRUD, chặn trùng số điện thoại, tìm kiếm, sắp xếp theo tên.
 public class HocVienService implements IService<HocVien> {
     private HocVienRepository hocVienRepository = new HocVienRepository();
     private List<HocVien> list;
@@ -23,8 +22,6 @@ public class HocVienService implements IService<HocVien> {
         return hocVienService;
     }
 
-    // id = số giây hiện tại (giống bài mẫu: currentTimeMillis() / 1000).
-    // Bài mẫu bị trùng id nếu thêm 2 bản ghi trong cùng 1 giây, nên ở đây gặp id đã có thì cộng thêm 1.
     public long taoIdMoi() {
         long id = System.currentTimeMillis() / 1000;
         while (daCoId(id)) {
@@ -42,7 +39,6 @@ public class HocVienService implements IService<HocVien> {
         return false;
     }
 
-    // Số điện thoại không được trùng với học viên KHÁC (idBoQua = id của chính học viên đang sửa)
     private void kiemTraTrungSoDienThoai(String soDienThoai, long idBoQua) {
         for (HocVien item : list) {
             if (item.getId() != idBoQua && item.getSoDienThoai().equals(soDienThoai)) {
@@ -65,11 +61,9 @@ public class HocVienService implements IService<HocVien> {
         if (DangKyService.getObject().coDangKyCuaHocVien(id)) {
             throw new NghiepVuException("Hoc vien dang co dang ky hoc, khong the xoa. Hay huy cac dang ky truoc.");
         }
-        if (UserService.getObject().coTaiKhoanCua(VaiTro.HOC_VIEN, id)) {
-            throw new NghiepVuException("Hoc vien dang co tai khoan dang nhap. Hay xoa tai khoan truoc.");
-        }
         this.list.remove(index);
         this.hocVienRepository.write(list);
+        UserService.getObject().xoaTaiKhoanCua(VaiTro.HOC_VIEN, id);
     }
 
     @Override
@@ -121,7 +115,6 @@ public class HocVienService implements IService<HocVien> {
         return listFound;
     }
 
-    // Sắp xếp kiểu người Việt: so sánh TÊN (chữ cuối) trước, trùng tên thì so cả họ tên
     public List<HocVien> sapXepTheoTen() {
         List<HocVien> ketQua = new ArrayList<>(list);
         ketQua.sort((a, b) -> {

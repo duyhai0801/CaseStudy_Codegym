@@ -2,7 +2,7 @@
 
 Case study Module 2 (CodeGym). Đây là ứng dụng console viết bằng Java để quản lý một trung tâm tiếng Anh: khóa học, giảng viên, lớp học, học viên, đăng ký học, học phí và điểm danh. Dữ liệu lưu ra file CSV nên tắt chương trình đi mở lại vẫn còn.
 
-Chương trình có **3 vai trò** đăng nhập: **quản trị viên** (toàn quyền), **giảng viên** (quản lý lớp mình dạy, điểm danh) và **học viên** (xem thông tin của mình). Không ai tự đăng ký được: chỉ admin mới cấp tài khoản cho giảng viên và học viên.
+Chương trình có **3 vai trò** đăng nhập: **quản trị viên** (quản lý toàn bộ dữ liệu, điểm danh chỉ xem), **giảng viên** (quản lý lớp mình dạy, điểm danh) và **học viên** (xem thông tin của mình, tự đăng ký / hủy đăng ký lớp). Không ai tự đăng ký được: chỉ admin mới cấp tài khoản cho giảng viên và học viên.
 
 Cấu trúc và cách chia tầng lấy theo bài mẫu **QuanLySanPham**: `entity → repository → service → ui`, cộng thêm `validator` và `lib`.
 
@@ -22,7 +22,7 @@ Nếu VS Code báo lỗi kiểu *"not on the classpath"*, mở Command Palette (
 
 | Vai trò | Username | Password | Gắn với |
 |---|---|---|---|
-| Quản trị viên | `admin` | `admin` | Có sẵn, toàn quyền |
+| Quản trị viên | `admin` | `admin` | Có sẵn, quyền cao nhất (điểm danh chỉ xem) |
 | Giảng viên | `minhanh` | `minhanh123` | Tran Minh Anh: dạy GT-K01 (đang học), GT-K02 |
 | Giảng viên | `david` | `david123` | David Nguyen: dạy TOEIC-K01 (đang học) |
 | Học viên | `minhtuan` | `tuan12345` | Nguyen Minh Tuan: học GT-K01, IELTS70-K01, còn nợ học phí |
@@ -35,6 +35,7 @@ Nếu VS Code báo lỗi kiểu *"not on the classpath"*, mở Command Palette (
 > - Nhập tiếng Việt **không dấu**, vì terminal Windows hay làm lỗi ký tự có dấu khi đọc bằng `Scanner`.
 > - Khi nhập ngày, dùng dạng `dd/MM/yyyy`, ví dụ `15/11/2026`.
 > - Khi **sửa**, nhấn Enter để giữ nguyên giá trị cũ.
+> - Ở mọi chỗ phải nhập id (chọn học viên, lớp, khóa học, giảng viên, mã đăng ký, tài khoản...), nhập **`0` để quay lại** mà không làm gì. id thật luôn có 10 chữ số nên không bao giờ trùng với `0`.
 
 ## 2. Cấu trúc thư mục
 
@@ -115,8 +116,8 @@ Nguoi (abstract) ◄── GiangVien, HocVien   (kế thừa)
 
 - Các entity liên kết với nhau bằng **id**, giống cách `Product` giữ `categoryId` trong bài mẫu. Ví dụ `LopHoc` giữ `khoaHocId` và `giangVienId`.
 - `DangKy` là **entity trung gian** cho quan hệ n–n giữa `HocVien` và `LopHoc`: một học viên học được nhiều lớp, một lớp có nhiều học viên.
-- **id của mọi entity** (khóa học, giảng viên, học viên, lớp, đăng ký, tài khoản) lấy theo **số giây thời gian thực** (`System.currentTimeMillis() / 1000`), giống bài mẫu. Nếu trùng id đã có thì cộng thêm 1. Dữ liệu mẫu ban đầu giữ id nhỏ (1, 2, 3…) cho dễ demo.
-- `User` gắn với người dùng thật qua cặp **`vaiTro` + `nguoiId`**. Ví dụ tài khoản `minhanh` có `vaiTro = GIANG_VIEN`, `nguoiId = 1`, nghĩa là giảng viên id 1. Nhờ vậy khi giảng viên đăng nhập, chương trình biết đó là ai để chỉ hiện lớp của người đó.
+- **id của mọi entity** (khóa học, giảng viên, học viên, lớp, đăng ký, điểm danh, tài khoản) là **số 10 chữ số**. Bản ghi thêm mới lấy theo **số giây thời gian thực** (`System.currentTimeMillis() / 1000`), giống bài mẫu; nếu trùng id đã có thì cộng thêm 1. Dữ liệu mẫu ban đầu dùng id ngẫu nhiên 10 chữ số.
+- `User` gắn với người dùng thật qua cặp **`vaiTro` + `nguoiId`**. Ví dụ tài khoản `minhanh` có `vaiTro = GIANG_VIEN`, `nguoiId = 1783209919`, nghĩa là giảng viên có id `1783209919` (Tran Minh Anh). Nhờ vậy khi giảng viên đăng nhập, chương trình biết đó là ai để chỉ hiện lớp của người đó.
 - `DangKy.hocPhiPhaiDong` được **chốt lúc đăng ký**, nên sau này khóa học có đổi giá thì các lượt đăng ký cũ cũng không bị ảnh hưởng.
 - Trạng thái học phí (chưa đóng / đóng một phần / đã đóng đủ) **không lưu vào file** mà tính từ 2 con số, nên luôn khớp với số tiền thực tế.
 
@@ -124,18 +125,18 @@ Nguoi (abstract) ◄── GiangVien, HocVien   (kế thừa)
 
 Đăng nhập xong, `AuthUI.loginUI()` xem `user.getVaiTro()` rồi mở đúng menu: `MainUI` (admin), `GiangVienMenuUI` hoặc `HocVienMenuUI`.
 
-### Quản trị viên (ADMIN): toàn quyền
+### Quản trị viên (ADMIN): quản lý toàn bộ, điểm danh chỉ xem
 
 | Menu | Chức năng |
 |---|---|
 | 1. Khóa học | Thêm, sửa, xóa, xem, tìm theo tên, sắp xếp theo học phí (tăng/giảm) |
-| 2. Giảng viên | Thêm, sửa, xóa, xem |
+| 2. Giảng viên | Thêm (**kèm tạo tài khoản**), sửa, xóa (xóa luôn tài khoản), xem |
 | 3. Lớp học | Mở lớp, sửa, xóa, xem (kèm sĩ số), xem học viên của lớp, lọc lớp còn chỗ, lọc theo khóa học, lọc theo trình độ, sắp xếp theo ngày khai giảng |
-| 4. Học viên | Thêm, sửa, xóa, xem, tìm theo tên, tìm theo SĐT, sắp xếp theo tên (kiểu Việt Nam: so chữ cuối), xem các lớp của học viên |
+| 4. Học viên | Thêm (**kèm tạo tài khoản**), sửa, xóa (xóa luôn tài khoản), xem, tìm theo tên, tìm theo SĐT, sắp xếp theo tên (kiểu Việt Nam: so chữ cuối), xem các lớp của học viên |
 | 5. Đăng ký & học phí | Đăng ký vào lớp, hủy đăng ký, đóng học phí, xem tất cả lượt đăng ký |
 | 6. Thống kê | Tổng quan học phí (đã thu, còn nợ, tỉ lệ), học viên còn nợ (nợ nhiều nhất ở trên), sĩ số và tỉ lệ lấp đầy từng lớp, xếp hạng khóa học theo số học viên, số lớp đang dạy của giảng viên |
-| 7. Điểm danh & chuyên cần | Điểm danh / cập nhật điểm danh **mọi lớp**, xem một buổi, tổng hợp chuyên cần |
-| 8. Quản lý tài khoản | **Cấp tài khoản** cho giảng viên hoặc học viên (chọn vai trò → chọn người → đặt username/password), xem danh sách tài khoản, đặt lại mật khẩu, xóa tài khoản |
+| 7. Xem điểm danh & chuyên cần | **Chỉ xem** lịch sử buổi học và tổng hợp chuyên cần của mọi lớp. Admin **không điểm danh**: việc đó do giảng viên dạy lớp làm |
+| 8. Quản lý tài khoản | **Cấp tài khoản** (chọn vai trò giảng viên / học viên → tạo người mới hoặc chọn người có sẵn → đặt username/password), xem danh sách tài khoản, đặt lại mật khẩu, xóa tài khoản, **xem quyền hạn của từng vai trò** |
 | 9. Đổi mật khẩu | |
 
 ### Giảng viên: chỉ làm việc với các lớp mình dạy
@@ -144,13 +145,15 @@ Nguoi (abstract) ◄── GiangVien, HocVien   (kế thừa)
 |---|---|
 | 1. Thông tin cá nhân | Họ tên, liên hệ, chuyên môn, số lớp đang phụ trách |
 | 2. Các lớp tôi dạy | Danh sách lớp kèm sĩ số, lịch học, trạng thái |
-| 3. Học viên và học phí của lớp | Danh sách học viên của 1 lớp kèm **ai đã đóng / còn nợ bao nhiêu**, và số người đã đóng đủ |
-| 4. Điểm danh / cập nhật điểm danh | Chọn lớp đang học, chọn ngày (Enter = hôm nay), chọn trạng thái từng học viên: có mặt / vắng có phép / vắng không phép. Buổi đã điểm danh thì hỏi có cập nhật lại không |
-| 5. Xem điểm danh một buổi | Chọn lớp, chọn buổi, xem ai có mặt, ai vắng |
-| 6. Tổng hợp chuyên cần | Số buổi có mặt / vắng của từng học viên, tỉ lệ chuyên cần, đánh dấu học viên đi học **dưới 80%** để nhắc nhở |
-| 7. Đổi mật khẩu | |
+| 3. Học viên và học phí của lớp | Danh sách học viên của 1 lớp kèm **SĐT, email** để liên hệ, **ai đã đóng / còn nợ bao nhiêu**, và số người đã đóng đủ |
+| 4. Điểm danh / cập nhật điểm danh | Chọn lớp đang học, chọn ngày (Enter = hôm nay), chọn trạng thái từng học viên: có mặt / vắng có phép / vắng không phép. Ngày không có trong lịch học (vd lớp T2-T4-T6 mà điểm danh Chủ nhật) thì cảnh báo và hỏi có phải buổi học bù không. Buổi đã điểm danh thì hỏi có cập nhật lại không |
+| 5. Xem lịch sử buổi học | Chọn lớp, xem các buổi đã học, chọn một buổi để xem ai có mặt, ai vắng |
+| 6. Tổng hợp chuyên cần | SĐT, số buổi, có mặt / vắng của từng học viên, tỉ lệ chuyên cần, đánh dấu học viên đi học **dưới 80%** để nhắc nhở |
+| 7. Bắt đầu lớp | Lớp *sắp khai giảng* đã tới ngày khai giảng thì giảng viên tự chuyển sang *đang học*, không phải chờ admin |
+| 8. Kết thúc lớp | Chuyển lớp *đang học* sang *đã kết thúc* (hỏi xác nhận) |
+| 9. Đổi mật khẩu | |
 
-### Học viên: chỉ xem dữ liệu của chính mình
+### Học viên: xem dữ liệu của chính mình, tự đăng ký lớp
 
 | Menu | Chức năng |
 |---|---|
@@ -158,8 +161,12 @@ Nguoi (abstract) ◄── GiangVien, HocVien   (kế thừa)
 | 2. Các lớp tôi đang học | Lớp, khóa học, giảng viên, lịch học, ngày khai giảng, trạng thái |
 | 3. Học phí của tôi | Từng lớp: phải đóng, đã đóng, còn nợ, và tổng số tiền còn nợ |
 | 4. Chuyên cần của tôi | Số buổi có mặt / vắng và tỉ lệ từng lớp, liệt kê các buổi vắng |
-| 5. Các lớp đang mở | Lớp còn chỗ trống (muốn đăng ký thì liên hệ quầy) |
-| 6. Đổi mật khẩu | |
+| 5. Các lớp đang mở | Lớp còn chỗ trống |
+| 6. Đăng ký lớp học | Chọn lớp còn chỗ, xác nhận. Gọi đúng `DangKyService.dangKyVaoLop()` như admin nên có đủ 4 bước kiểm tra và giảm 10% cho học viên cũ. Đăng ký xong ở trạng thái *Chưa đóng*, học viên ra quầy đóng tiền |
+| 7. Hủy đăng ký lớp | Chỉ hủy được lượt đăng ký **của chính mình**, và chỉ khi lớp còn *sắp khai giảng*. Đã đóng tiền thì báo số tiền được hoàn |
+| 8. Đổi mật khẩu | |
+
+Học viên chỉ thao tác được cho chính mình: id học viên lấy từ tài khoản đang đăng nhập (`user.getNguoiId()`), không cho nhập id người khác. Thu học phí vẫn chỉ admin làm.
 
 ## 6. Quy tắc nghiệp vụ
 
@@ -177,24 +184,27 @@ Qua hết 4 điều kiện thì tạo lượt đăng ký. Học viên **đã t�
 
 **Tài khoản:**
 - Tài khoản `admin` / `admin` luôn có sẵn. Nếu file `users.csv` không có admin thì `UserService` tự tạo lại.
-- Không ai tự đăng ký được. Chỉ admin cấp tài khoản, và chỉ cấp cho người **đã có** trong danh sách giảng viên / học viên.
+- Không ai tự đăng ký được. Chỉ admin tạo tài khoản.
+- **Thêm giảng viên / học viên mới là phải tạo luôn tài khoản** cho người đó: nhập thông tin người, rồi nhập username/password. Chương trình in ra tài khoản để admin đưa cho người đó. Người có sẵn trong danh sách mà chưa có tài khoản thì admin cấp ở menu *Quản lý tài khoản*.
 - Mỗi người chỉ có 1 tài khoản. Username không được trùng.
 - Không xóa được tài khoản admin.
 - Đăng nhập không kiểm tra regex, chỉ so khớp username/password (nhờ vậy mật khẩu mặc định `admin` vẫn đăng nhập được). Mật khẩu mới thì phải 6–20 ký tự, có cả chữ và số.
 
 **Điểm danh** (`DiemDanhService`):
-- Chỉ điểm danh lớp **đang học**.
+- **Chỉ giảng viên dạy lớp đó** mới điểm danh / cập nhật điểm danh. Admin chỉ xem.
+- Chỉ điểm danh lớp **đang học**. Giảng viên tự **bắt đầu lớp** được khi đã tới ngày khai giảng.
+- Ngày điểm danh được đối chiếu với lịch học (`T2`…`T7`, `CN` trong chuỗi lịch học). Không khớp thì cảnh báo, vẫn cho điểm danh nếu xác nhận là buổi học bù.
 - Ngày điểm danh không được ở tương lai, không được trước ngày khai giảng.
 - Giảng viên chỉ chọn được lớp mình dạy.
 - Điểm danh lại một buổi đã có thì **thay toàn bộ** bản cũ của buổi đó, tức là cập nhật điểm danh.
-- Tỉ lệ chuyên cần = số buổi có mặt / số buổi lớp đã điểm danh. Dưới 80% thì bị đánh dấu "cần nhắc nhở".
+- Tỉ lệ chuyên cần = số buổi có mặt / **số buổi đã điểm danh của chính học viên đó**. Nhờ vậy học viên vào lớp muộn không bị tính vắng những buổi trước khi đăng ký. Dưới 80% thì bị đánh dấu "cần nhắc nhở".
 
 **Ràng buộc khi xóa:** không cho xóa dữ liệu đang được bản ghi khác dùng tới.
 - Khóa học còn lớp thì không xóa được.
 - Giảng viên còn phụ trách lớp thì không xóa được.
 - Lớp đã có học viên đăng ký thì không xóa được.
 - Học viên còn lượt đăng ký thì không xóa được.
-- Giảng viên / học viên đang có tài khoản đăng nhập thì phải xóa tài khoản trước.
+- Xóa giảng viên / học viên thì **tài khoản đăng nhập của người đó cũng bị xóa theo**.
 
 **Sửa lớp:** sĩ số tối đa không được nhỏ hơn số học viên hiện có. Lớp đã có học viên thì không được đổi sang khóa học khác, vì học phí đã chốt theo khóa cũ.
 
@@ -213,7 +223,7 @@ Qua hết 4 điều kiện thì tạo lượt đăng ký. Học viên **đã t�
 | Bài mẫu | Case study này |
 |---|---|
 | `case 0` thiếu `break` nên thoát xong vẫn in "Invalid choice" | Mọi `case` đều có `break` |
-| Có menu không in và không xử lý lựa chọn `0` | Menu nào cũng có `0` |
+| Có menu không in và không xử lý lựa chọn `0` | Menu nào cũng có `0`. Mọi chỗ nhập id cũng có `0` để quay lại, không bị kẹt trong vòng nhập lại |
 | Xóa category không kiểm tra product đang dùng nên `findById` ném exception và crash | Kiểm tra ràng buộc trước khi xóa. Bảng in tên qua hàm `layTen...()` có `try/catch`, nên dữ liệu lỗi cũng không làm crash |
 | `editUI` nhập tên bằng `inputString()`, bỏ qua validator | Sửa cũng đi qua validator, nhấn Enter để giữ giá trị cũ |
 | Tên có dấu phẩy làm hỏng `split(",")` | Regex của validator chặn dấu phẩy |

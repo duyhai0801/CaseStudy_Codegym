@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// Tính các số liệu thống kê. Không giữ dữ liệu riêng mà lấy từ các service khác.
 public class ThongKeService {
     private static final ThongKeService thongKeService = new ThongKeService();
 
@@ -38,7 +37,6 @@ public class ThongKeService {
         return tong;
     }
 
-    // Map: hocVienId -> tổng tiền còn nợ (một học viên có thể nợ ở nhiều lớp), sắp xếp nợ giảm dần
     public List<Map.Entry<Long, Long>> thongKeNoTheoHocVien() {
         Map<Long, Long> noTheoHocVien = new LinkedHashMap<>();
         for (DangKy item : DangKyService.getObject().getAll()) {
@@ -58,7 +56,6 @@ public class ThongKeService {
         return siSo * 100.0 / lop.getSiSoToiDa();
     }
 
-    // Map: khoaHocId -> số lượt đăng ký của tất cả các lớp thuộc khóa đó, sắp xếp giảm dần
     public List<Map.Entry<Long, Integer>> xepHangKhoaHocTheoSoHocVien() {
         Map<Long, Integer> soHocVienTheoKhoa = new LinkedHashMap<>();
         for (KhoaHoc item : KhoaHocService.getObject().getAll()) {
@@ -74,7 +71,6 @@ public class ThongKeService {
         return ketQua;
     }
 
-    // Map: giangVienId -> số lớp CHƯA KẾT THÚC mà giảng viên đó đang phụ trách
     public List<Map.Entry<Long, Integer>> demSoLopDangDayTheoGiangVien() {
         Map<Long, Integer> soLopTheoGiangVien = new LinkedHashMap<>();
         for (GiangVien item : GiangVienService.getObject().getAll()) {
