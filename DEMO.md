@@ -18,7 +18,7 @@
 | Lớp IELTS70-K01 (đã đầy 5/5) | `3949671471` |
 
 - Mã đăng ký mới là số dài 10 chữ số. Khi cần nhập lại, bôi đen mã trong bảng ở Terminal, nhấn `Ctrl+C`, rồi bấm chuột phải vào Terminal để dán, khỏi gõ sai.
-- Lớp GT-K01 học thứ 2-4-6. Nếu hôm demo không phải T2, T4 hay T6 thì ở bước 16 chương trình sẽ cảnh báo ngày không có trong lịch học và hỏi có phải buổi học bù không: nhập `y` để tiếp tục.
+- Lớp GT-K01 học thứ 2-4-6. Ở bước 16, nếu hôm demo là T2, T4 hoặc T6 thì chương trình hỏi *Xac nhan bat dau buoi hoc?*. Nếu không phải thì nó cảnh báo ngày không có trong lịch học và hỏi có phải buổi học bù không. Cả hai trường hợp đều nhập `y` để tiếp tục.
 
 ## Phần A: Quản trị viên và nghiệp vụ chính
 
@@ -33,7 +33,8 @@
 | 7 | 3 Đóng học phí → học viên `6654192463` → mã đăng ký lớp GT-K02 → `5000000` | *So tien vuot qua so con no* | Không cho đóng quá số đang nợ |
 | 8 | 3 → học viên `6654192463` → cùng mã → `1000000` | Còn nợ 2,600,000 (Dong mot phan) | Trạng thái học phí **tính ra** từ số tiền, không lưu vào file |
 | 9 | 0 → 1 Khóa học → 3 Xóa → id `1788863335` → y | *Khoa hoc dang co lop hoc, khong the xoa* | Sửa lỗi bài mẫu (xóa category làm crash) |
-| 10 | 0 → 4 Học viên → 7 Sắp xếp theo tên | Anh, Bao, Chau, Duc… | So sánh **chữ cuối** của họ tên |
+| 10 | 0 → 4 Học viên → 7 Danh sách học viên theo tên | Anh, Bao, Chau, Duc… | So sánh **chữ cuối** của họ tên |
+| 10b | 1 Thêm học viên → nhập họ tên, SĐT → ở ô email gõ `0` | *Da huy thao tac.* rồi hiện lại menu QUAN LY HOC VIEN, danh sách không có người mới | Gõ `0` ở bất kỳ ô nào là hủy, chưa có gì được lưu |
 
 ## Phần B: Phân quyền
 
@@ -45,15 +46,15 @@
 | 13b | 5 Xem quyền hạn của từng vai trò | Quyền của quản trị viên, giảng viên, học viên | Phân quyền rõ ràng cho từng vai trò |
 | 13c | 0 → 4 Học viên → 1 Thêm: `Vo Minh Khang`, `0933444555`, `khang@gmail.com`, `03/03/2003`, 1 → username `minhkhang` / `khang123` | *Da them hoc vien* rồi *Da tao tai khoan...* | Thêm học viên mới là tạo luôn tài khoản để đưa cho họ |
 | 14 | 0 → 0 Đăng xuất → 1 → `minhanh` / `minhanh123` | Vào menu GIANG VIEN: Tran Minh Anh | Đăng nhập xong tự vào menu theo vai trò |
-| 15 | 3 Học viên và học phí → lớp `2980189196` | *Chi duoc chon lop trong danh sach* (lớp TOEIC-K01 không phải của cô) → nhập `8014946297` | Giảng viên chỉ thấy lớp mình dạy. Xem được ai đã đóng học phí |
-| 16 | 4 Điểm danh → lớp `8014946297` → Enter (hôm nay) → Enter, Enter, `3`, Enter | *Da luu diem danh... 3/4 co mat* | Enter = có mặt, 3 = vắng không phép |
+| 15 | 3 Danh sách học viên và học phí theo lớp → lớp `2980189196` | *Chi duoc chon lop trong danh sach* (lớp TOEIC-K01 không phải của cô) → nhập `8014946297` | Giảng viên chỉ thấy lớp mình dạy. Xem được ai đã đóng học phí |
+| 16 | 4 Điểm danh → lớp `8014946297` → Enter (hôm nay) → `y` (xác nhận) → Enter, Enter, `3`, Enter | *Da luu diem danh... 3/4 co mat* | Enter = có mặt, 3 = vắng không phép |
 | 17 | 6 Tổng hợp chuyên cần → lớp `8014946297` | Le Hoang Bao bị đánh dấu *Vang nhieu - can nhac nho*, có SĐT để gọi nhắc | Tỉ lệ có mặt dưới 80% thì cảnh báo. Tỉ lệ tính trên số buổi của từng học viên |
-| 17b | 7 Bắt đầu lớp → lớp `4291129747` | *Chua toi ngay khai giang cua lop GT-K02* | Giảng viên tự mở lớp được, nhưng phải tới ngày khai giảng |
+| 17b | 7 Bắt đầu lớp → lớp `4291129747` | *Chua toi ngay khai giang cua lop GT-K02* | Giảng viên tự mở lớp được, nhưng phải tới ngày khai giảng. Admin cũng làm được ở *Lớp học → 1 Cập nhật lớp → 4*, gọi cùng hàm `batDauLop()` nên cùng luật |
 | 18 | 0 Đăng xuất → 1 → `minhtuan` / `tuan12345` | Vào menu HOC VIEN: Nguyen Minh Tuan | |
 | 19 | 3 Học phí của tôi, rồi 4 Chuyên cần | Còn nợ 8,820,000. Bảng chuyên cần và các buổi vắng | Học viên chỉ xem được dữ liệu của mình |
-| 19b | 6 Đăng ký lớp → lớp `3949671471` → y | *Lop IELTS70-K01 da du si so* | Học viên tự đăng ký vẫn qua đủ các bước kiểm tra |
-| 19c | 6 → lớp `4291129747` → y | Thành công, **3,240,000** (giảm 10%), nhắc đóng tiền trước ngày khai giảng | Dùng chung `dangKyVaoLop()` với admin |
-| 19d | 7 Hủy đăng ký → mã vừa tạo → y | *Da huy dang ky!* | Chỉ hủy được của mình, lớp còn sắp khai giảng |
+| 19b | 5 Đăng ký / hủy đăng ký → 1 → lớp `3949671471` → y | *Lop IELTS70-K01 da du si so* | Học viên tự đăng ký vẫn qua đủ các bước kiểm tra |
+| 19c | 1 → lớp `4291129747` → y | Thành công, **3,240,000** (giảm 10%), nhắc đóng tiền trước ngày khai giảng | Dùng chung `dangKyVaoLop()` với admin |
+| 19d | 2 → mã vừa tạo (hiện ở bảng *Lop ban da dang ky*) → y, rồi 0 | *Da huy dang ky!* | Chỉ hủy được của mình, lớp còn sắp khai giảng |
 | 20 | 0 → 1 → `maiphuong` / `phuong123` → 3 | Thấy 2 lớp vừa đăng ký ở phần A, còn nợ 9,080,000 | Tài khoản vừa được cấp ở bước 12 dùng được ngay |
 
 ## Câu hỏi phỏng vấn hay gặp
@@ -104,19 +105,30 @@ Có hai lý do. Thứ nhất, khóa học có thể đổi giá sau này. Thứ 
 `Nguoi` là abstract class, có hàm abstract `layVaiTro()`. `GiangVien` và `HocVien` mỗi lớp override hàm này theo cách riêng. Ngoài ra các service đều implement cùng interface `IService`.
 
 **Vì sao exception kế thừa `RuntimeException`?**
-Đây là unchecked exception, nên không bắt buộc phải khai báo `throws` ở mọi hàm, giống bài mẫu. Service ném lỗi ra, UI là nơi bắt lỗi và in thông báo.
+Đây là unchecked exception, nên không bắt buộc phải khai báo `throws` ở mọi hàm, giống bài mẫu. Service ném lỗi ra, UI là nơi bắt lỗi và in thông báo. `HuyThaoTacException` cũng vậy: nếu là checked exception thì hàm nào có nhập liệu cũng phải ghi `throws`.
 
 **Vì sao `InputHelper` dùng `nextLine()` rồi mới parse?**
 `nextInt()` không đọc ký tự xuống dòng, nên lệnh `nextLine()` ngay sau đó bị "trôi". Đọc cả dòng rồi `parseInt` thì tránh được lỗi này, và bắt được `NumberFormatException` để cho nhập lại.
 
 **Học viên vào lớp muộn thì tỉ lệ chuyên cần tính sao?**
-Tỉ lệ = số buổi có mặt / số buổi **của chính học viên đó** (`DiemDanhService.demSoBuoiCuaHocVien()`), không chia cho tổng số buổi của lớp. Học viên mới vào chưa có buổi nào thì hiện "Chua co buoi nao" thay vì 0%.
+Tỉ lệ = số buổi có mặt / số buổi **của chính học viên đó** (`DiemDanhService.demSoBuoiCuaHocVien()`), không chia cho tổng số buổi của lớp. Học viên mới vào chưa có buổi nào thì hiện "Chua co buoi nao" thay vì 0%. Khi điểm danh (kể cả cập nhật một buổi cũ), `DiemDanhService.layHocVienCanDiemDanh()` chỉ lấy học viên có `ngayDangKy` không sau ngày của buổi đó, nên người vào muộn không bị chấm cho buổi trước khi họ đăng ký.
 
 **Điểm danh sai ngày thì sao?**
-`DiemDanhService.laNgayCoLich()` tách chuỗi lịch học (vd `T2-T4-T6 18:00-19:30`) thành các thứ trong tuần rồi so với thứ của ngày điểm danh. Không khớp thì cảnh báo, giảng viên xác nhận là buổi học bù thì vẫn lưu.
+`DiemDanhService.laNgayCoLich()` tách chuỗi lịch học (vd `T2-T4-T6 18:00-19:30`) thành các thứ trong tuần rồi so với thứ của ngày điểm danh. `DiemDanhUI.diemDanhUI()` dùng một chuỗi `if / else if` để chọn **đúng một câu xác nhận**:
+- buổi đã điểm danh → *Cap nhat lai?*
+- ngày tương lai → *Ngay hoc chua den, xac nhan hoc truoc?*
+- ngoài lịch → *Day la buoi hoc bu?*
+- đúng lịch → *Xac nhan bat dau buoi hoc?*
+
+Trả lời khác `y` thì thoát, không lưu gì. Chỉ ngày trước khai giảng là bị chặn hẳn. Chương trình không so giờ học, để giảng viên điểm danh trễ hoặc điểm danh bù được.
+
+**Admin bắt đầu khai giảng một lớp thế nào? Sao không cho sửa trạng thái trực tiếp?**
+*Lớp học → 1 Cập nhật lớp → 4 Bắt đầu lớp* → nhập id. Hàm gọi `LopHocService.batDauLop()`, cũng là hàm giảng viên dùng. Hàm kiểm tra lớp đang *sắp khai giảng* và đã tới ngày khai giảng. Trước đây admin đổi trạng thái được trong *Sửa lớp*, đi qua `update()` không kiểm tra gì, nên admin có thể cho lớp học trước ngày khai giảng hoặc mở lại lớp đã kết thúc. Giờ trạng thái chỉ đổi qua `batDauLop()` / `ketThucLop()`, và `update()` từ chối nếu trạng thái bị đổi. Một việc, một luật, cho mọi vai trò.
 
 **Chọn nhầm chức năng thì thoát ra sao?**
-Ở mọi chỗ nhập id đều có `(0 de quay lai)`. Các hàm chọn như `HocVienUI.chonHocVienId()` gặp `0` thì trả về `0`, nơi gọi kiểm tra `if (hocVienId == 0) return;`. Hàm trả về object như `DiemDanhUI.chonLop()` thì trả `null`. Không lo trùng vì id thật luôn có 10 chữ số.
+Gõ `0` ở bất kỳ ô nhập nào. `InputHelper.inputString()` thấy `0` thì `throw new HuyThaoTacException()`. Exception này bay ngược lên tới menu gần nhất, vì mỗi menu bọc `switch` trong `try / catch (HuyThaoTacException e)`. Menu in "Da huy thao tac." rồi hiện lại chính nó. Nhờ vậy không phải viết `if (x == 0) return;` ở từng ô: một chỗ ném, mỗi menu một chỗ bắt.
+
+Ô "Nhap lua chon" của menu đọc bằng `inputLuaChon()`, không ném lỗi, vì ở đó `0` là "Quay lai". Gõ `0` không làm mất dữ liệu nửa chừng, vì các hàm chỉ gọi `service.add()` / `update()` ở cuối, sau khi nhập xong. Riêng thêm giảng viên / học viên thì nhập tài khoản trước (`TaiKhoanUI.nhapTaiKhoan`), lưu người, rồi mới lưu tài khoản (`TaiKhoanUI.luuTaiKhoan`).
 
 **Hạn chế còn lại / hướng phát triển?**
 - Mật khẩu đang lưu dạng chữ thường trong `users.csv`. Bản thật nên mã hóa (hash) mật khẩu.

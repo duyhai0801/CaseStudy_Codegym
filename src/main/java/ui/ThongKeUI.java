@@ -29,7 +29,7 @@ public class ThongKeUI {
             System.out.println("5. So lop dang day cua tung giang vien");
             System.out.println("0. Quay lai");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
+            choice = InputHelper.inputLuaChon();
             switch (choice) {
                 case 1:
                     tongQuanHocPhiUI();

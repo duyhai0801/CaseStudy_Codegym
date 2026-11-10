@@ -39,7 +39,7 @@ public class HocVienService implements IService<HocVien> {
         return false;
     }
 
-    private void kiemTraTrungSoDienThoai(String soDienThoai, long idBoQua) {
+    public void kiemTraTrungSoDienThoai(String soDienThoai, long idBoQua) {
         for (HocVien item : list) {
             if (item.getId() != idBoQua && item.getSoDienThoai().equals(soDienThoai)) {
                 throw new NghiepVuException("So dien thoai " + soDienThoai + " da duoc dung boi hoc vien "

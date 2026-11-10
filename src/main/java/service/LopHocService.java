@@ -1,9 +1,7 @@
 package service;
 
-import entity.KhoaHoc;
 import entity.LopHoc;
 import entity.TrangThaiLop;
-import entity.TrinhDo;
 import lib.errors.DataNotFoundException;
 import lib.errors.NghiepVuException;
 import repository.LopHocRepository;
@@ -83,6 +81,13 @@ public class LopHocService implements IService<LopHoc> {
         }
         if (siSoHienTai > 0 && lopCu.getKhoaHocId() != lopMoi.getKhoaHocId()) {
             throw new NghiepVuException("Lop da co hoc vien dang ky, khong the doi sang khoa hoc khac.");
+        }
+        if (lopMoi.getTrangThai() != lopCu.getTrangThai()) {
+            throw new NghiepVuException("Trang thai lop chi doi qua chuc nang bat dau / ket thuc lop.");
+        }
+        if (lopCu.getTrangThai() != TrangThaiLop.SAP_KHAI_GIANG
+                && !lopMoi.getNgayKhaiGiang().equals(lopCu.getNgayKhaiGiang())) {
+            throw new NghiepVuException("Lop da khai giang, khong doi duoc ngay khai giang.");
         }
         this.list.set(index, lopMoi);
         this.lopHocRepository.write(list);
@@ -169,33 +174,6 @@ public class LopHocService implements IService<LopHoc> {
                 ketQua.add(item);
             }
         }
-        return ketQua;
-    }
-
-    public List<LopHoc> locTheoKhoaHoc(long khoaHocId) {
-        List<LopHoc> ketQua = new ArrayList<>();
-        for (LopHoc item : list) {
-            if (item.getKhoaHocId() == khoaHocId) {
-                ketQua.add(item);
-            }
-        }
-        return ketQua;
-    }
-
-    public List<LopHoc> locTheoTrinhDo(TrinhDo trinhDo) {
-        List<LopHoc> ketQua = new ArrayList<>();
-        for (LopHoc item : list) {
-            KhoaHoc khoaHoc = KhoaHocService.getObject().findById(item.getKhoaHocId());
-            if (khoaHoc.getTrinhDo() == trinhDo) {
-                ketQua.add(item);
-            }
-        }
-        return ketQua;
-    }
-
-    public List<LopHoc> sapXepTheoNgayKhaiGiang() {
-        List<LopHoc> ketQua = new ArrayList<>(list);
-        ketQua.sort((a, b) -> a.getNgayKhaiGiang().compareTo(b.getNgayKhaiGiang()));
         return ketQua;
     }
 }

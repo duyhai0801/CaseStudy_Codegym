@@ -2,6 +2,7 @@ package ui;
 
 import entity.User;
 import lib.InputHelper;
+import lib.errors.HuyThaoTacException;
 import service.UserService;
 import validator.UserValidator;
 
@@ -17,22 +18,26 @@ public class AuthUI {
             System.out.println("0. Thoat chuong trinh");
             System.out.println("(Chua co tai khoan? Lien he quan tri vien de duoc cap tai khoan)");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    loginUI();
-                    break;
-                case 0:
-                    System.out.println("Tam biet!");
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        loginUI();
+                        break;
+                    case 0:
+                        System.out.println("Tam biet!");
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }
 
     public static void loginUI() {
-        System.out.println("=========== Dang nhap ==========");
+        System.out.println("====== Dang nhap ======");
         System.out.println("Nhap username: ");
         String username = InputHelper.inputString();
         System.out.println("Nhap password: ");

@@ -1,5 +1,6 @@
 package lib;
 
+import lib.errors.HuyThaoTacException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -12,8 +13,25 @@ public class InputHelper {
     public static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT);
 
+    public static final String PHIM_QUAY_LAI = "0";
+
     public static String inputString() {
-        return input.nextLine().trim();
+        String line = input.nextLine().trim();
+        if (line.equals(PHIM_QUAY_LAI)) {
+            throw new HuyThaoTacException();
+        }
+        return line;
+    }
+
+    public static int inputLuaChon() {
+        while (true) {
+            String line = input.nextLine().trim();
+            try {
+                return Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                System.out.println("Lua chon khong hop le, vui long nhap so:");
+            }
+        }
     }
 
     public static int inputInt() {

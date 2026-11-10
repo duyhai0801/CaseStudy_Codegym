@@ -2,6 +2,7 @@ package ui;
 
 import entity.User;
 import lib.InputHelper;
+import lib.errors.HuyThaoTacException;
 
 public class MainUI {
     public static void showMainMenu(User user) {
@@ -20,40 +21,44 @@ public class MainUI {
             System.out.println("9. Doi mat khau");
             System.out.println("0. Dang xuat");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    KhoaHocUI.showMainMenu();
-                    break;
-                case 2:
-                    GiangVienUI.showMainMenu();
-                    break;
-                case 3:
-                    LopHocUI.showMainMenu();
-                    break;
-                case 4:
-                    HocVienUI.showMainMenu();
-                    break;
-                case 5:
-                    DangKyUI.showMainMenu();
-                    break;
-                case 6:
-                    ThongKeUI.showMainMenu();
-                    break;
-                case 7:
-                    DiemDanhUI.showMainMenu();
-                    break;
-                case 8:
-                    TaiKhoanUI.showMainMenu();
-                    break;
-                case 9:
-                    AuthUI.doiMatKhauUI(user);
-                    break;
-                case 0:
-                    System.out.println("Da dang xuat.");
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        KhoaHocUI.showMainMenu();
+                        break;
+                    case 2:
+                        GiangVienUI.showMainMenu();
+                        break;
+                    case 3:
+                        LopHocUI.showMainMenu();
+                        break;
+                    case 4:
+                        HocVienUI.showMainMenu();
+                        break;
+                    case 5:
+                        DangKyUI.showMainMenu();
+                        break;
+                    case 6:
+                        ThongKeUI.showMainMenu();
+                        break;
+                    case 7:
+                        DiemDanhUI.showMainMenu();
+                        break;
+                    case 8:
+                        TaiKhoanUI.showMainMenu();
+                        break;
+                    case 9:
+                        AuthUI.doiMatKhauUI(user);
+                        break;
+                    case 0:
+                        System.out.println("Da dang xuat.");
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }

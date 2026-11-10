@@ -10,6 +10,7 @@ import entity.User;
 import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
+import lib.errors.HuyThaoTacException;
 import lib.errors.NghiepVuException;
 import service.DangKyService;
 import service.GiangVienService;
@@ -38,50 +39,55 @@ public class GiangVienMenuUI {
             System.out.println();
             System.out.println("====== GIANG VIEN: " + giangVien.getHoTen() + " ======");
             System.out.println("1. Xem thong tin ca nhan");
-            System.out.println("2. Xem cac lop toi day");
-            System.out.println("3. Xem hoc vien va hoc phi cua lop");
+            System.out.println("2. Danh sach lop toi day");
+            System.out.println("3. Danh sach hoc vien va hoc phi theo lop");
             System.out.println("4. Diem danh / cap nhat diem danh");
             System.out.println("5. Xem lich su buoi hoc");
             System.out.println("6. Tong hop chuyen can cua lop");
-            System.out.println("7. Bat dau lop (khi den ngay khai giang)");
+            System.out.println("7. Bat dau lop");
             System.out.println("8. Ket thuc lop");
             System.out.println("9. Doi mat khau");
             System.out.println("0. Dang xuat");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    xemThongTinUI(giangVien);
-                    break;
-                case 2:
-                    LopHocUI.inDanhSach(lopHocService.locTheoGiangVien(giangVienId));
-                    break;
-                case 3:
-                    xemHocVienVaHocPhiUI(giangVienId);
-                    break;
-                case 4:
-                    DiemDanhUI.diemDanhUI(giangVienId);
-                    break;
-                case 5:
-                    DiemDanhUI.xemBuoiHocUI(giangVienId);
-                    break;
-                case 6:
-                    DiemDanhUI.xemChuyenCanLopUI(giangVienId);
-                    break;
-                case 7:
-                    batDauLopUI(giangVienId);
-                    break;
-                case 8:
-                    ketThucLopUI(giangVienId);
-                    break;
-                case 9:
-                    AuthUI.doiMatKhauUI(user);
-                    break;
-                case 0:
-                    System.out.println("Da dang xuat.");
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        xemThongTinUI(giangVien);
+                        break;
+                    case 2:
+                        System.out.println("====== Danh sach lop toi day ======");
+                        LopHocUI.inDanhSach(lopHocService.locTheoGiangVien(giangVienId));
+                        break;
+                    case 3:
+                        xemHocVienVaHocPhiUI(giangVienId);
+                        break;
+                    case 4:
+                        DiemDanhUI.diemDanhUI(giangVienId);
+                        break;
+                    case 5:
+                        DiemDanhUI.xemBuoiHocUI(giangVienId);
+                        break;
+                    case 6:
+                        DiemDanhUI.xemChuyenCanLopUI(giangVienId);
+                        break;
+                    case 7:
+                        batDauLopUI(giangVienId);
+                        break;
+                    case 8:
+                        ketThucLopUI(giangVienId);
+                        break;
+                    case 9:
+                        AuthUI.doiMatKhauUI(user);
+                        break;
+                    case 0:
+                        System.out.println("Da dang xuat.");
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }
@@ -105,7 +111,7 @@ public class GiangVienMenuUI {
     }
 
     public static void xemHocVienVaHocPhiUI(long giangVienId) {
-        System.out.println("====== Hoc vien va hoc phi ======");
+        System.out.println("====== Danh sach hoc vien va hoc phi theo lop ======");
         LopHoc lop = DiemDanhUI.chonLop(giangVienId, false);
         if (lop == null) {
             return;
@@ -155,12 +161,9 @@ public class GiangVienMenuUI {
             return null;
         }
         LopHocUI.inDanhSach(cacLop);
-        System.out.println("Nhap id lop (0 de quay lai): ");
+        System.out.println("Nhap id lop: ");
         while (true) {
             long id = InputHelper.inputLong();
-            if (id == 0) {
-                return null;
-            }
             for (LopHoc item : cacLop) {
                 if (item.getId() == id) {
                     return item;

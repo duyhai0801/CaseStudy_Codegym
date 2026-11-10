@@ -6,6 +6,7 @@ import entity.LopHoc;
 import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
+import lib.errors.HuyThaoTacException;
 import lib.errors.NghiepVuException;
 import service.DangKyService;
 import service.KhoaHocService;
@@ -26,27 +27,31 @@ public class DangKyUI {
             System.out.println("1. Dang ky hoc vien vao lop");
             System.out.println("2. Huy dang ky");
             System.out.println("3. Dong hoc phi");
-            System.out.println("4. Xem tat ca luot dang ky");
+            System.out.println("4. Danh sach luot dang ky");
             System.out.println("0. Quay lai");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    dangKyUI();
-                    break;
-                case 2:
-                    huyDangKyUI();
-                    break;
-                case 3:
-                    dongHocPhiUI();
-                    break;
-                case 4:
-                    getAllUI();
-                    break;
-                case 0:
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        dangKyUI();
+                        break;
+                    case 2:
+                        huyDangKyUI();
+                        break;
+                    case 3:
+                        dongHocPhiUI();
+                        break;
+                    case 4:
+                        getAllUI();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }
@@ -55,16 +60,10 @@ public class DangKyUI {
         System.out.println("====== Dang ky hoc vien vao lop ======");
         System.out.println("--- Chon hoc vien ---");
         long hocVienId = HocVienUI.chonHocVienId();
-        if (hocVienId == 0) {
-            return;
-        }
         System.out.println("--- Cac lop con cho trong ---");
         LopHocUI.inDanhSach(lopHocService.locLopConCho());
-        System.out.println("Nhap id lop muon dang ky (0 de quay lai): ");
+        System.out.println("Nhap id lop muon dang ky: ");
         long lopHocId = InputHelper.inputLong();
-        if (lopHocId == 0) {
-            return;
-        }
         try {
             DangKy dangKy = dangKyService.dangKyVaoLop(hocVienId, lopHocId);
             LopHoc lopHoc = lopHocService.findById(lopHocId);
@@ -110,11 +109,12 @@ public class DangKyUI {
         System.out.println("Phai dong: " + FormatHelper.formatMoney(dangKy.getHocPhiPhaiDong())
                 + " | Da dong: " + FormatHelper.formatMoney(dangKy.getSoTienDaDong())
                 + " | Con no: " + FormatHelper.formatMoney(dangKy.tinhSoTienConNo()));
-        System.out.println("Nhap so tien dong (0 de quay lai): ");
-        long soTien = InputHelper.inputLong();
-        if (soTien == 0) {
+        if (dangKy.tinhSoTienConNo() == 0) {
+            System.out.println("Luot dang ky nay da dong du hoc phi.");
             return;
         }
+        System.out.println("Nhap so tien dong: ");
+        long soTien = InputHelper.inputLong();
         try {
             DangKy daCapNhat = dangKyService.dongHocPhi(dangKy.getId(), soTien);
             System.out.println("Da ghi nhan " + FormatHelper.formatMoney(soTien) + ". Con no: "
@@ -128,20 +128,14 @@ public class DangKyUI {
     private static DangKy chonDangKyCuaHocVien() {
         System.out.println("--- Chon hoc vien ---");
         long hocVienId = HocVienUI.chonHocVienId();
-        if (hocVienId == 0) {
-            return null;
-        }
         List<DangKy> cacDangKy = dangKyService.layDangKyCuaHocVien(hocVienId);
         if (cacDangKy.isEmpty()) {
             System.out.println("Hoc vien nay chua dang ky lop nao.");
             return null;
         }
         inDanhSach(cacDangKy);
-        System.out.println("Nhap ma dang ky (0 de quay lai): ");
+        System.out.println("Nhap ma dang ky: ");
         long dangKyId = InputHelper.inputLong();
-        if (dangKyId == 0) {
-            return null;
-        }
         try {
             DangKy dangKy = dangKyService.findById(dangKyId);
             if (dangKy.getHocVienId() != hocVienId) {
@@ -156,7 +150,7 @@ public class DangKyUI {
     }
 
     public static void getAllUI() {
-        System.out.println("====== Tat ca luot dang ky ======");
+        System.out.println("====== Danh sach luot dang ky ======");
         inDanhSach(dangKyService.getAll());
     }
 

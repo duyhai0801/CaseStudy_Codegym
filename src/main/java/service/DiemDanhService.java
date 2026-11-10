@@ -1,5 +1,6 @@
 package service;
 
+import entity.DangKy;
 import entity.DiemDanh;
 import entity.LopHoc;
 import entity.TrangThaiDiemDanh;
@@ -90,15 +91,22 @@ public class DiemDanhService implements IService<DiemDanh> {
             throw new NghiepVuException("Chi diem danh duoc lop dang hoc (lop " + lop.getTenLop() + " dang o trang thai '"
                     + lop.getTrangThai().getTenHienThi() + "').");
         }
-        if (ngay.isAfter(LocalDate.now())) {
-            throw new NghiepVuException("Khong the diem danh cho ngay trong tuong lai.");
-        }
         if (ngay.isBefore(lop.getNgayKhaiGiang())) {
             throw new NghiepVuException("Ngay diem danh truoc ngay khai giang cua lop.");
         }
-        if (DangKyService.getObject().demSoHocVienCuaLop(lop.getId()) == 0) {
-            throw new NghiepVuException("Lop chua co hoc vien nao.");
+        if (layHocVienCanDiemDanh(lop.getId(), ngay).isEmpty()) {
+            throw new NghiepVuException("Lop chua co hoc vien nao dang ky tu ngay nay tro ve truoc.");
         }
+    }
+
+    public List<DangKy> layHocVienCanDiemDanh(long lopHocId, LocalDate ngay) {
+        List<DangKy> ketQua = new ArrayList<>();
+        for (DangKy item : DangKyService.getObject().layDangKyCuaLop(lopHocId)) {
+            if (!item.getNgayDangKy().isAfter(ngay)) {
+                ketQua.add(item);
+            }
+        }
+        return ketQua;
     }
 
     public List<DayOfWeek> layCacThuCoLich(LopHoc lop) {

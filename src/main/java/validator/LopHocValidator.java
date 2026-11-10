@@ -1,6 +1,5 @@
 package validator;
 
-import entity.TrangThaiLop;
 import lib.InputHelper;
 
 import java.time.LocalDate;
@@ -25,18 +24,5 @@ public class LopHocValidator {
 
     public static LocalDate inputNgayKhaiGiang(LocalDate giaTriCu) {
         return InputHelper.inputDate(giaTriCu);
-    }
-
-    public static TrangThaiLop inputTrangThai(TrangThaiLop giaTriCu) {
-        TrangThaiLop[] cacTrangThai = TrangThaiLop.values();
-        for (int i = 0; i < cacTrangThai.length; i++) {
-            System.out.println("  " + (i + 1) + ". " + cacTrangThai[i].getTenHienThi());
-        }
-        Integer luaChonCu = null;
-        if (giaTriCu != null) {
-            luaChonCu = giaTriCu.ordinal() + 1;
-        }
-        int luaChon = CommonValidator.inputIntInRange(1, cacTrangThai.length, luaChonCu);
-        return cacTrangThai[luaChon - 1];
     }
 }

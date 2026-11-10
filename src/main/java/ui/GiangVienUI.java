@@ -1,10 +1,12 @@
 package ui;
 
 import entity.GiangVien;
+import entity.User;
 import entity.VaiTro;
 import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
+import lib.errors.HuyThaoTacException;
 import lib.errors.NghiepVuException;
 import service.GiangVienService;
 import validator.NguoiValidator;
@@ -19,30 +21,31 @@ public class GiangVienUI {
         do {
             System.out.println();
             System.out.println("====== QUAN LY GIANG VIEN ======");
+            inDanhSach(giangVienService.getAll());
             System.out.println("1. Them giang vien");
-            System.out.println("2. Sua giang vien");
+            System.out.println("2. Sua thong tin giang vien");
             System.out.println("3. Xoa giang vien");
-            System.out.println("4. Xem danh sach");
             System.out.println("0. Quay lai");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    addUI();
-                    break;
-                case 2:
-                    editUI();
-                    break;
-                case 3:
-                    deleteUI();
-                    break;
-                case 4:
-                    getAllUI();
-                    break;
-                case 0:
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        addUI();
+                        break;
+                    case 2:
+                        editUI();
+                        break;
+                    case 3:
+                        deleteUI();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }
@@ -58,21 +61,19 @@ public class GiangVienUI {
         String email = NguoiValidator.inputEmail(null);
         System.out.println("Nhap chuyen mon (vd IELTS, TOEIC, Giao tiep): ");
         String chuyenMon = NguoiValidator.inputChuyenMon(null);
-        System.out.println("Nhap so nam kinh nghiem (0-50): ");
+        System.out.println("Nhap so nam kinh nghiem (1-50): ");
         int soNamKinhNghiem = NguoiValidator.inputSoNamKinhNghiem(null);
+        User taiKhoan = TaiKhoanUI.nhapTaiKhoan(VaiTro.GIANG_VIEN, id);
         giangVienService.add(new GiangVien(id, hoTen, soDienThoai, email, chuyenMon, soNamKinhNghiem));
         System.out.println("Da them giang vien, id = " + id);
-        TaiKhoanUI.taoTaiKhoanChoNguoi(VaiTro.GIANG_VIEN, id);
+        TaiKhoanUI.luuTaiKhoan(taiKhoan);
         return id;
     }
 
     public static void editUI() {
-        System.out.println("====== Sua giang vien ======");
-        System.out.println("Nhap id giang vien can sua (0 de quay lai): ");
+        System.out.println("====== Sua thong tin giang vien ======");
+        System.out.println("Nhap id giang vien can sua: ");
         long id = InputHelper.inputLong();
-        if (id == 0) {
-            return;
-        }
         try {
             GiangVien cu = giangVienService.findById(id);
             System.out.println("(Nhan Enter de giu gia tri cu)");
@@ -87,7 +88,7 @@ public class GiangVienUI {
             System.out.println("So nam kinh nghiem [" + cu.getSoNamKinhNghiem() + "]: ");
             int soNamKinhNghiem = NguoiValidator.inputSoNamKinhNghiem(cu.getSoNamKinhNghiem());
             giangVienService.update(id, new GiangVien(id, hoTen, soDienThoai, email, chuyenMon, soNamKinhNghiem));
-            System.out.println("Da cap nhat giang vien!");
+            System.out.println("Da cap nhat thong tin giang vien!");
         } catch (DataNotFoundException e) {
             System.out.println("Khong tim thay giang vien id " + id);
         }
@@ -95,11 +96,8 @@ public class GiangVienUI {
 
     public static void deleteUI() {
         System.out.println("====== Xoa giang vien ======");
-        System.out.println("Nhap id giang vien can xoa (0 de quay lai): ");
+        System.out.println("Nhap id giang vien can xoa: ");
         long id = InputHelper.inputLong();
-        if (id == 0) {
-            return;
-        }
         try {
             GiangVien giangVien = giangVienService.findById(id);
             System.out.println("Ban co chac muon xoa giang vien '" + giangVien.getHoTen() + "'? (y/n)");
@@ -112,11 +110,6 @@ public class GiangVienUI {
         } catch (NghiepVuException e) {
             System.out.println("Khong the xoa: " + e.getMessage());
         }
-    }
-
-    public static void getAllUI() {
-        System.out.println("====== Danh sach giang vien ======");
-        inDanhSach(giangVienService.getAll());
     }
 
     public static void inDanhSach(List<GiangVien> list) {
@@ -135,12 +128,9 @@ public class GiangVienUI {
 
     public static long chonGiangVienId(Long giaTriCu) {
         inDanhSach(giangVienService.getAll());
-        System.out.println("Nhap id giang vien (0 de quay lai): ");
+        System.out.println("Nhap id giang vien: ");
         while (true) {
             long id = InputHelper.inputLong(giaTriCu);
-            if (id == 0) {
-                return 0;
-            }
             try {
                 giangVienService.findById(id);
                 return id;

@@ -5,6 +5,7 @@ import entity.TrinhDo;
 import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
+import lib.errors.HuyThaoTacException;
 import lib.errors.NghiepVuException;
 import service.KhoaHocService;
 import validator.CommonValidator;
@@ -23,35 +24,39 @@ public class KhoaHocUI {
             System.out.println("1. Them khoa hoc");
             System.out.println("2. Sua khoa hoc");
             System.out.println("3. Xoa khoa hoc");
-            System.out.println("4. Xem danh sach");
+            System.out.println("4. Danh sach khoa hoc");
             System.out.println("5. Tim theo ten");
-            System.out.println("6. Sap xep theo hoc phi");
+            System.out.println("6. Danh sach khoa hoc theo hoc phi");
             System.out.println("0. Quay lai");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    addUI();
-                    break;
-                case 2:
-                    editUI();
-                    break;
-                case 3:
-                    deleteUI();
-                    break;
-                case 4:
-                    getAllUI();
-                    break;
-                case 5:
-                    timTheoTenUI();
-                    break;
-                case 6:
-                    sapXepTheoHocPhiUI();
-                    break;
-                case 0:
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        addUI();
+                        break;
+                    case 2:
+                        editUI();
+                        break;
+                    case 3:
+                        deleteUI();
+                        break;
+                    case 4:
+                        getAllUI();
+                        break;
+                    case 5:
+                        timTheoTenUI();
+                        break;
+                    case 6:
+                        sapXepTheoHocPhiUI();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }
@@ -73,11 +78,9 @@ public class KhoaHocUI {
 
     public static void editUI() {
         System.out.println("====== Sua khoa hoc ======");
-        System.out.println("Nhap id khoa hoc can sua (0 de quay lai): ");
+        inDanhSach(khoaHocService.getAll());
+        System.out.println("Nhap id khoa hoc can sua: ");
         long id = InputHelper.inputLong();
-        if (id == 0) {
-            return;
-        }
         try {
             KhoaHoc cu = khoaHocService.findById(id);
             System.out.println("(Nhan Enter de giu gia tri cu)");
@@ -98,11 +101,9 @@ public class KhoaHocUI {
 
     public static void deleteUI() {
         System.out.println("====== Xoa khoa hoc ======");
-        System.out.println("Nhap id khoa hoc can xoa (0 de quay lai): ");
+        inDanhSach(khoaHocService.getAll());
+        System.out.println("Nhap id khoa hoc can xoa: ");
         long id = InputHelper.inputLong();
-        if (id == 0) {
-            return;
-        }
         try {
             KhoaHoc khoaHoc = khoaHocService.findById(id);
             System.out.println("Ban co chac muon xoa khoa hoc '" + khoaHoc.getTenKhoaHoc() + "'? (y/n)");
@@ -123,12 +124,14 @@ public class KhoaHocUI {
     }
 
     public static void timTheoTenUI() {
+        System.out.println("====== Tim khoa hoc theo ten ======");
         System.out.println("Nhap tu khoa: ");
         String keyword = InputHelper.inputString();
         inDanhSach(khoaHocService.timTheoTen(keyword));
     }
 
     public static void sapXepTheoHocPhiUI() {
+        System.out.println("====== Danh sach khoa hoc theo hoc phi ======");
         System.out.println("1. Tang dan   2. Giam dan");
         int luaChon = CommonValidator.inputIntInRange(1, 2, null);
         inDanhSach(khoaHocService.sapXepTheoHocPhi(luaChon == 1));
@@ -150,12 +153,9 @@ public class KhoaHocUI {
 
     public static long chonKhoaHocId(Long giaTriCu) {
         inDanhSach(khoaHocService.getAll());
-        System.out.println("Nhap id khoa hoc (0 de quay lai): ");
+        System.out.println("Nhap id khoa hoc: ");
         while (true) {
             long id = InputHelper.inputLong(giaTriCu);
-            if (id == 0) {
-                return 0;
-            }
             try {
                 khoaHocService.findById(id);
                 return id;

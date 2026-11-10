@@ -8,6 +8,7 @@ import entity.TrangThaiLop;
 import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
+import lib.errors.HuyThaoTacException;
 import lib.errors.NghiepVuException;
 import service.DangKyService;
 import service.DiemDanhService;
@@ -34,18 +35,22 @@ public class DiemDanhUI {
             System.out.println("2. Tong hop chuyen can cua lop");
             System.out.println("0. Quay lai");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    xemBuoiHocUI(null);
-                    break;
-                case 2:
-                    xemChuyenCanLopUI(null);
-                    break;
-                case 0:
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        xemBuoiHocUI(null);
+                        break;
+                    case 2:
+                        xemChuyenCanLopUI(null);
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }
@@ -77,12 +82,9 @@ public class DiemDanhUI {
             return null;
         }
         LopHocUI.inDanhSach(cacLop);
-        System.out.println("Nhap id lop (0 de quay lai): ");
+        System.out.println("Nhap id lop: ");
         while (true) {
             long id = InputHelper.inputLong();
-            if (id == 0) {
-                return null;
-            }
             for (LopHoc item : cacLop) {
                 if (item.getId() == id) {
                     return item;
@@ -106,26 +108,26 @@ public class DiemDanhUI {
             System.out.println("Khong the diem danh: " + e.getMessage());
             return;
         }
-        if (!diemDanhService.laNgayCoLich(lop, ngay)) {
+        if (diemDanhService.daDiemDanh(lop.getId(), ngay)) {
+            System.out.println("Buoi " + FormatHelper.formatDate(ngay) + " da duoc diem danh. Cap nhat lai? (y/n)");
+        } else if (ngay.isAfter(LocalDate.now())) {
+            System.out.println("Ngay hoc chua den, xac nhan hoc truoc? (y/n)");
+        } else if (!diemDanhService.laNgayCoLich(lop, ngay)) {
             System.out.println("Ngay " + FormatHelper.formatDate(ngay) + " (" + tenThu(ngay.getDayOfWeek())
                     + ") khong co trong lich hoc cua lop (" + lop.getLichHoc() + ").");
             System.out.println("Day la buoi hoc bu? Van diem danh? (y/n)");
-            if (!InputHelper.inputYesNo()) {
-                return;
-            }
+        } else {
+            System.out.println("Xac nhan bat dau buoi hoc? (y/n)");
         }
-        if (diemDanhService.daDiemDanh(lop.getId(), ngay)) {
-            System.out.println("Buoi " + FormatHelper.formatDate(ngay) + " da duoc diem danh. Cap nhat lai? (y/n)");
-            if (!InputHelper.inputYesNo()) {
-                return;
-            }
+        if (!InputHelper.inputYesNo()) {
+            return;
         }
 
         System.out.println("Chon trang thai cho tung hoc vien: 1. Co mat | 2. Vang co phep | 3. Vang khong phep");
         System.out.println("(Nhan Enter = Co mat)");
         TrangThaiDiemDanh[] cacTrangThai = TrangThaiDiemDanh.values();
         List<DiemDanh> danhSach = new ArrayList<>();
-        for (DangKy item : dangKyService.layDangKyCuaLop(lop.getId())) {
+        for (DangKy item : diemDanhService.layHocVienCanDiemDanh(lop.getId(), ngay)) {
             System.out.println("- " + HocVienUI.layTenHocVien(item.getHocVienId()) + ": ");
             int luaChon = CommonValidator.inputIntInRange(1, cacTrangThai.length, 1);
             danhSach.add(new DiemDanh(0, lop.getId(), item.getHocVienId(), ngay, cacTrangThai[luaChon - 1]));
@@ -160,11 +162,8 @@ public class DiemDanhUI {
         for (int i = 0; i < cacNgay.size(); i++) {
             System.out.println("  " + (i + 1) + ". " + FormatHelper.formatDate(cacNgay.get(i)));
         }
-        System.out.println("Chon buoi (0 de quay lai): ");
-        int luaChon = CommonValidator.inputIntInRange(0, cacNgay.size(), null);
-        if (luaChon == 0) {
-            return;
-        }
+        System.out.println("Chon buoi: ");
+        int luaChon = CommonValidator.inputIntInRange(1, cacNgay.size(), null);
         LocalDate ngay = cacNgay.get(luaChon - 1);
 
         System.out.println("Lop " + lop.getTenLop() + " - buoi " + FormatHelper.formatDate(ngay) + ":");

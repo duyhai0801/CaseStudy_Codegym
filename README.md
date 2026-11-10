@@ -35,7 +35,8 @@ Nếu VS Code báo lỗi kiểu *"not on the classpath"*, mở Command Palette (
 > - Nhập tiếng Việt **không dấu**, vì terminal Windows hay làm lỗi ký tự có dấu khi đọc bằng `Scanner`.
 > - Khi nhập ngày, dùng dạng `dd/MM/yyyy`, ví dụ `15/11/2026`.
 > - Khi **sửa**, nhấn Enter để giữ nguyên giá trị cũ.
-> - Ở mọi chỗ phải nhập id (chọn học viên, lớp, khóa học, giảng viên, mã đăng ký, tài khoản...), nhập **`0` để quay lại** mà không làm gì. id thật luôn có 10 chữ số nên không bao giờ trùng với `0`.
+> - Chỗ nào phải nhập id (sửa, xóa, chọn học viên / lớp / khóa học / giảng viên / tài khoản...) thì chương trình **in danh sách tương ứng ngay phía trên**, nhìn vào đó mà nhập.
+> - **Gõ `0` ở bất kỳ ô nhập nào để hủy thao tác và quay lại menu đang đứng.** Áp dụng cho cả 3 vai trò, ở mọi bước: chọn id, nhập tên, chọn trình độ, xác nhận y/n, điểm danh từng học viên... Chưa có gì được lưu, vì mọi chức năng chỉ ghi file sau khi đã nhập xong hết.
 
 ## 2. Cấu trúc thư mục
 
@@ -71,7 +72,7 @@ CaseStudy_Codegym/
 │   └── lib/
 │       ├── InputHelper.java      bọc 1 Scanner duy nhất, nhập sai thì bắt nhập lại
 │       ├── FormatHelper.java     định dạng tiền, ngày
-│       └── errors/               DataNotFoundException, UserIsExist, NghiepVuException
+│       └── errors/               DataNotFoundException, UserIsExist, NghiepVuException, HuyThaoTacException
 ├── data/                         khoahoc.csv, giangvien.csv, hocvien.csv, lophoc.csv, dangky.csv,
 │                                 diemdanh.csv, users.csv
 ├── data_mau/                     bản sao dữ liệu mẫu ban đầu, dùng để reset
@@ -129,14 +130,14 @@ Nguoi (abstract) ◄── GiangVien, HocVien   (kế thừa)
 
 | Menu | Chức năng |
 |---|---|
-| 1. Khóa học | Thêm, sửa, xóa, xem, tìm theo tên, sắp xếp theo học phí (tăng/giảm) |
-| 2. Giảng viên | Thêm (**kèm tạo tài khoản**), sửa, xóa (xóa luôn tài khoản), xem |
-| 3. Lớp học | Mở lớp, sửa, xóa, xem (kèm sĩ số), xem học viên của lớp, lọc lớp còn chỗ, lọc theo khóa học, lọc theo trình độ, sắp xếp theo ngày khai giảng |
-| 4. Học viên | Thêm (**kèm tạo tài khoản**), sửa, xóa (xóa luôn tài khoản), xem, tìm theo tên, tìm theo SĐT, sắp xếp theo tên (kiểu Việt Nam: so chữ cuối), xem các lớp của học viên |
-| 5. Đăng ký & học phí | Đăng ký vào lớp, hủy đăng ký, đóng học phí, xem tất cả lượt đăng ký |
+| 1. Khóa học | Thêm, sửa, xóa, danh sách khóa học, tìm theo tên, danh sách khóa học theo học phí (tăng/giảm) |
+| 2. Giảng viên | Màn hình luôn in **danh sách giảng viên** ở trên, bên dưới là Thêm (**kèm tạo tài khoản**), Sửa thông tin, Xóa (xóa luôn tài khoản). Làm xong danh sách tự in lại |
+| 3. Lớp học | **1. Cập nhật lớp**: một màn hình in danh sách lớp kèm menu con *Mở lớp mới, Sửa lớp, Xóa lớp, Bắt đầu lớp, Kết thúc lớp*, làm xong danh sách tự in lại. Ngoài ra: danh sách lớp học (kèm sĩ số), danh sách học viên theo lớp, danh sách lớp còn chỗ trống |
+| 4. Học viên | Thêm (**kèm tạo tài khoản**), sửa thông tin, xóa (xóa luôn tài khoản), danh sách học viên, tìm theo tên, tìm theo SĐT, danh sách học viên theo tên (kiểu Việt Nam: so chữ cuối), danh sách lớp theo học viên |
+| 5. Đăng ký & học phí | Đăng ký vào lớp, hủy đăng ký, đóng học phí, danh sách lượt đăng ký |
 | 6. Thống kê | Tổng quan học phí (đã thu, còn nợ, tỉ lệ), học viên còn nợ (nợ nhiều nhất ở trên), sĩ số và tỉ lệ lấp đầy từng lớp, xếp hạng khóa học theo số học viên, số lớp đang dạy của giảng viên |
 | 7. Xem điểm danh & chuyên cần | **Chỉ xem** lịch sử buổi học và tổng hợp chuyên cần của mọi lớp. Admin **không điểm danh**: việc đó do giảng viên dạy lớp làm |
-| 8. Quản lý tài khoản | **Cấp tài khoản** (chọn vai trò giảng viên / học viên → tạo người mới hoặc chọn người có sẵn → đặt username/password), xem danh sách tài khoản, đặt lại mật khẩu, xóa tài khoản, **xem quyền hạn của từng vai trò** |
+| 8. Quản lý tài khoản | **Cấp tài khoản** (chọn vai trò giảng viên / học viên → tạo người mới hoặc chọn người có sẵn → đặt username/password), danh sách tài khoản, đặt lại mật khẩu, xóa tài khoản, **xem quyền hạn của từng vai trò** |
 | 9. Đổi mật khẩu | |
 
 ### Giảng viên: chỉ làm việc với các lớp mình dạy
@@ -144,9 +145,9 @@ Nguoi (abstract) ◄── GiangVien, HocVien   (kế thừa)
 | Menu | Chức năng |
 |---|---|
 | 1. Thông tin cá nhân | Họ tên, liên hệ, chuyên môn, số lớp đang phụ trách |
-| 2. Các lớp tôi dạy | Danh sách lớp kèm sĩ số, lịch học, trạng thái |
-| 3. Học viên và học phí của lớp | Danh sách học viên của 1 lớp kèm **SĐT, email** để liên hệ, **ai đã đóng / còn nợ bao nhiêu**, và số người đã đóng đủ |
-| 4. Điểm danh / cập nhật điểm danh | Chọn lớp đang học, chọn ngày (Enter = hôm nay), chọn trạng thái từng học viên: có mặt / vắng có phép / vắng không phép. Ngày không có trong lịch học (vd lớp T2-T4-T6 mà điểm danh Chủ nhật) thì cảnh báo và hỏi có phải buổi học bù không. Buổi đã điểm danh thì hỏi có cập nhật lại không |
+| 2. Danh sách lớp tôi dạy | Danh sách lớp kèm sĩ số, lịch học, trạng thái |
+| 3. Danh sách học viên và học phí theo lớp | Danh sách học viên của 1 lớp kèm **SĐT, email** để liên hệ, **ai đã đóng / còn nợ bao nhiêu**, và số người đã đóng đủ |
+| 4. Điểm danh / cập nhật điểm danh | Chọn lớp đang học, chọn ngày (Enter = hôm nay), chọn trạng thái từng học viên: có mặt / vắng có phép / vắng không phép. Trước khi chấm, chương trình hỏi **một câu xác nhận** tùy trường hợp: buổi đã điểm danh → *Cap nhat lai?*; ngày ở tương lai → *Ngay hoc chua den, xac nhan hoc truoc?*; ngày không có trong lịch (vd lớp T2-T4-T6 mà điểm danh Chủ nhật) → *Day la buoi hoc bu?*; đúng lịch → *Xac nhan bat dau buoi hoc?* |
 | 5. Xem lịch sử buổi học | Chọn lớp, xem các buổi đã học, chọn một buổi để xem ai có mặt, ai vắng |
 | 6. Tổng hợp chuyên cần | SĐT, số buổi, có mặt / vắng của từng học viên, tỉ lệ chuyên cần, đánh dấu học viên đi học **dưới 80%** để nhắc nhở |
 | 7. Bắt đầu lớp | Lớp *sắp khai giảng* đã tới ngày khai giảng thì giảng viên tự chuyển sang *đang học*, không phải chờ admin |
@@ -158,17 +159,22 @@ Nguoi (abstract) ◄── GiangVien, HocVien   (kế thừa)
 | Menu | Chức năng |
 |---|---|
 | 1. Thông tin cá nhân | Họ tên, liên hệ, ngày sinh, trình độ đầu vào |
-| 2. Các lớp tôi đang học | Lớp, khóa học, giảng viên, lịch học, ngày khai giảng, trạng thái |
+| 2. Danh sách lớp tôi đang học | Lớp, khóa học, giảng viên, lịch học, ngày khai giảng, trạng thái |
 | 3. Học phí của tôi | Từng lớp: phải đóng, đã đóng, còn nợ, và tổng số tiền còn nợ |
 | 4. Chuyên cần của tôi | Số buổi có mặt / vắng và tỉ lệ từng lớp, liệt kê các buổi vắng |
-| 5. Các lớp đang mở | Lớp còn chỗ trống |
-| 6. Đăng ký lớp học | Chọn lớp còn chỗ, xác nhận. Gọi đúng `DangKyService.dangKyVaoLop()` như admin nên có đủ 4 bước kiểm tra và giảm 10% cho học viên cũ. Đăng ký xong ở trạng thái *Chưa đóng*, học viên ra quầy đóng tiền |
-| 7. Hủy đăng ký lớp | Chỉ hủy được lượt đăng ký **của chính mình**, và chỉ khi lớp còn *sắp khai giảng*. Đã đóng tiền thì báo số tiền được hoàn |
-| 8. Đổi mật khẩu | |
+| 5. Đăng ký / hủy đăng ký lớp | Một màn hình hiện cùng lúc 2 bảng: **lớp đang mở mà mình chưa đăng ký** và **các lớp mình đã đăng ký**, kèm menu con `1. Dang ky lop`, `2. Huy dang ky lop`, `0. Quay lai`. Làm xong, 2 bảng tự hiện lại với dữ liệu mới. **Đăng ký** gọi đúng `DangKyService.dangKyVaoLop()` như admin nên có đủ 4 bước kiểm tra và giảm 10% cho học viên cũ. Đăng ký xong ở trạng thái *Chưa đóng*, học viên ra quầy đóng tiền. **Hủy** chỉ hủy được lượt đăng ký **của chính mình**, và chỉ khi lớp còn *sắp khai giảng*. Đã đóng tiền thì báo số tiền được hoàn |
+| 6. Đổi mật khẩu | |
 
 Học viên chỉ thao tác được cho chính mình: id học viên lấy từ tài khoản đang đăng nhập (`user.getNguoiId()`), không cho nhập id người khác. Thu học phí vẫn chỉ admin làm.
 
 ## 6. Quy tắc nghiệp vụ
+
+**Hủy thao tác bằng `0`:**
+- `InputHelper.inputString()` thấy người dùng gõ `0` thì ném `HuyThaoTacException`. Mọi hàm nhập khác (`inputInt`, `inputLong`, `inputDate`, `inputYesNo`, các validator) đều đi qua `inputString()`, nên ô nào cũng hủy được.
+- Mỗi menu bọc `switch` trong `try / catch (HuyThaoTacException e)`, in "Da huy thao tac." rồi hiện lại chính menu đó.
+- Riêng ô "Nhap lua chon" của menu dùng `InputHelper.inputLuaChon()`, không ném lỗi, vì ở đó `0` nghĩa là "Quay lai" / "Dang xuat".
+- Không giá trị hợp lệ nào bằng `0`: id có 10 chữ số, số buổi từ 1, học phí từ 100.000, sĩ số từ 5, số năm kinh nghiệm giảng viên từ 1.
+- Thêm giảng viên / học viên: nhập luôn username và password **trước**, rồi mới lưu người và tài khoản. Gõ `0` ở bước tài khoản thì không có ai bị lưu mà thiếu tài khoản.
 
 **Đăng ký vào lớp** (`DangKyService.dangKyVaoLop`) kiểm tra lần lượt:
 1. Học viên và lớp phải tồn tại.
@@ -193,11 +199,14 @@ Qua hết 4 điều kiện thì tạo lượt đăng ký. Học viên **đã t�
 **Điểm danh** (`DiemDanhService`):
 - **Chỉ giảng viên dạy lớp đó** mới điểm danh / cập nhật điểm danh. Admin chỉ xem.
 - Chỉ điểm danh lớp **đang học**. Giảng viên tự **bắt đầu lớp** được khi đã tới ngày khai giảng.
+- Ngày điểm danh không được trước ngày khai giảng (bị chặn).
 - Ngày điểm danh được đối chiếu với lịch học (`T2`…`T7`, `CN` trong chuỗi lịch học). Không khớp thì cảnh báo, vẫn cho điểm danh nếu xác nhận là buổi học bù.
-- Ngày điểm danh không được ở tương lai, không được trước ngày khai giảng.
+- Ngày ở **tương lai** vẫn điểm danh được (lớp học trước), nhưng phải xác nhận *Ngay hoc chua den, xac nhan hoc truoc?*. Đúng lịch thì xác nhận *Xac nhan bat dau buoi hoc?*.
+- Chương trình chỉ so **thứ trong tuần**, không so giờ học. Giảng viên điểm danh lúc nào trong ngày cũng được, và điểm danh bù cho ngày cũ cũng được.
 - Giảng viên chỉ chọn được lớp mình dạy.
 - Điểm danh lại một buổi đã có thì **thay toàn bộ** bản cũ của buổi đó, tức là cập nhật điểm danh.
-- Tỉ lệ chuyên cần = số buổi có mặt / **số buổi đã điểm danh của chính học viên đó**. Nhờ vậy học viên vào lớp muộn không bị tính vắng những buổi trước khi đăng ký. Dưới 80% thì bị đánh dấu "cần nhắc nhở".
+- Mỗi buổi chỉ chấm những học viên **đăng ký từ ngày đó trở về trước** (`DiemDanhService.layHocVienCanDiemDanh()`). Cập nhật lại buổi 02/11 thì người đăng ký ngày 10/11 không có trong danh sách.
+- Tỉ lệ chuyên cần = số buổi có mặt / **số buổi đã điểm danh của chính học viên đó**. Nhờ 2 quy tắc này, học viên vào lớp muộn không bị tính vắng những buổi trước khi đăng ký. Dưới 80% thì bị đánh dấu "cần nhắc nhở".
 
 **Ràng buộc khi xóa:** không cho xóa dữ liệu đang được bản ghi khác dùng tới.
 - Khóa học còn lớp thì không xóa được.
@@ -206,11 +215,16 @@ Qua hết 4 điều kiện thì tạo lượt đăng ký. Học viên **đã t�
 - Học viên còn lượt đăng ký thì không xóa được.
 - Xóa giảng viên / học viên thì **tài khoản đăng nhập của người đó cũng bị xóa theo**.
 
-**Sửa lớp:** sĩ số tối đa không được nhỏ hơn số học viên hiện có. Lớp đã có học viên thì không được đổi sang khóa học khác, vì học phí đã chốt theo khóa cũ.
+**Sửa lớp:** sĩ số tối đa không được nhỏ hơn số học viên hiện có. Lớp đã có học viên thì không được đổi sang khóa học khác, vì học phí đã chốt theo khóa cũ. Lớp đã khai giảng (*đang học* / *đã kết thúc*) thì không đổi được ngày khai giảng, vì đã có điểm danh theo ngày đó.
+
+**Trạng thái lớp** (*Sắp khai giảng → Đang học → Đã kết thúc*):
+- Mở lớp mới thì lớp luôn ở *Sắp khai giảng*, không cho chọn trạng thái.
+- Màn hình *Sửa lớp* không có ô trạng thái. `LopHocService.update()` còn chặn thêm: trạng thái mới khác trạng thái cũ thì ném `NghiepVuException`.
+- Trạng thái chỉ đổi qua 2 hàm `LopHocService.batDauLop()` (lớp phải *sắp khai giảng* và đã tới ngày khai giảng) và `ketThucLop()` (lớp phải *đang học*). Admin (*Cập nhật lớp → 4 / 5*) và giảng viên (menu giảng viên → 7 / 8) gọi **cùng 2 hàm này**, nên cùng một luật.
 
 **Kiểm tra dữ liệu nhập:**
 - Họ tên chỉ gồm chữ và khoảng trắng.
-- Số điện thoại có 10 số, bắt đầu bằng 0, và không được trùng giữa các học viên.
+- Số điện thoại có 10 số, bắt đầu bằng 0, và không được trùng giữa các học viên. Nhập trùng thì báo **ngay tại ô số điện thoại**, kèm tên người đang dùng số đó, rồi cho nhập lại.
 - Email đúng định dạng.
 - Học viên từ 6 tuổi trở lên.
 - Không nhận ngày không tồn tại, ví dụ 31/02.
@@ -223,7 +237,7 @@ Qua hết 4 điều kiện thì tạo lượt đăng ký. Học viên **đã t�
 | Bài mẫu | Case study này |
 |---|---|
 | `case 0` thiếu `break` nên thoát xong vẫn in "Invalid choice" | Mọi `case` đều có `break` |
-| Có menu không in và không xử lý lựa chọn `0` | Menu nào cũng có `0`. Mọi chỗ nhập id cũng có `0` để quay lại, không bị kẹt trong vòng nhập lại |
+| Có menu không in và không xử lý lựa chọn `0` | Menu nào cũng có `0`. Ở mọi ô nhập, gõ `0` là hủy và quay lại menu (`HuyThaoTacException`), không bị kẹt trong vòng nhập lại |
 | Xóa category không kiểm tra product đang dùng nên `findById` ném exception và crash | Kiểm tra ràng buộc trước khi xóa. Bảng in tên qua hàm `layTen...()` có `try/catch`, nên dữ liệu lỗi cũng không làm crash |
 | `editUI` nhập tên bằng `inputString()`, bỏ qua validator | Sửa cũng đi qua validator, nhấn Enter để giữ giá trị cũ |
 | Tên có dấu phẩy làm hỏng `split(",")` | Regex của validator chặn dấu phẩy |
@@ -235,7 +249,7 @@ Qua hết 4 điều kiện thì tạo lượt đăng ký. Học viên **đã t�
 Ngoài ra project còn thể hiện thêm:
 - **Kế thừa và đa hình:** lớp `Nguoi` abstract với hàm `layVaiTro()`.
 - **enum**.
-- **Exception tự định nghĩa** có message (`NghiepVuException`).
+- **Exception tự định nghĩa** có message (`NghiepVuException`), và dùng exception để điều khiển luồng hủy thao tác (`HuyThaoTacException`).
 - **`Map`** dùng trong thống kê.
 - **`Comparator`** viết bằng lambda để sắp xếp.
 - **`LocalDate`** cho các trường ngày tháng.

@@ -2,10 +2,12 @@ package ui;
 
 import entity.HocVien;
 import entity.TrinhDo;
+import entity.User;
 import entity.VaiTro;
 import lib.FormatHelper;
 import lib.InputHelper;
 import lib.errors.DataNotFoundException;
+import lib.errors.HuyThaoTacException;
 import lib.errors.NghiepVuException;
 import service.DangKyService;
 import service.HocVienService;
@@ -25,45 +27,50 @@ public class HocVienUI {
             System.out.println();
             System.out.println("====== QUAN LY HOC VIEN ======");
             System.out.println("1. Them hoc vien");
-            System.out.println("2. Sua hoc vien");
+            System.out.println("2. Sua thong tin hoc vien");
             System.out.println("3. Xoa hoc vien");
-            System.out.println("4. Xem danh sach");
+            System.out.println("4. Danh sach hoc vien");
             System.out.println("5. Tim theo ten");
             System.out.println("6. Tim theo so dien thoai");
-            System.out.println("7. Sap xep theo ten");
-            System.out.println("8. Xem cac lop cua mot hoc vien");
+            System.out.println("7. Danh sach hoc vien theo ten");
+            System.out.println("8. Danh sach lop theo hoc vien");
             System.out.println("0. Quay lai");
             System.out.println("Nhap lua chon: ");
-            choice = InputHelper.inputInt();
-            switch (choice) {
-                case 1:
-                    addUI();
-                    break;
-                case 2:
-                    editUI();
-                    break;
-                case 3:
-                    deleteUI();
-                    break;
-                case 4:
-                    getAllUI();
-                    break;
-                case 5:
-                    timTheoTenUI();
-                    break;
-                case 6:
-                    timTheoSoDienThoaiUI();
-                    break;
-                case 7:
-                    inDanhSach(hocVienService.sapXepTheoTen());
-                    break;
-                case 8:
-                    xemLopCuaHocVienUI();
-                    break;
-                case 0:
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le");
+            choice = InputHelper.inputLuaChon();
+            try {
+                switch (choice) {
+                    case 1:
+                        addUI();
+                        break;
+                    case 2:
+                        editUI();
+                        break;
+                    case 3:
+                        deleteUI();
+                        break;
+                    case 4:
+                        getAllUI();
+                        break;
+                    case 5:
+                        timTheoTenUI();
+                        break;
+                    case 6:
+                        timTheoSoDienThoaiUI();
+                        break;
+                    case 7:
+                        System.out.println("====== Danh sach hoc vien theo ten ======");
+                        inDanhSach(hocVienService.sapXepTheoTen());
+                        break;
+                    case 8:
+                        xemLopCuaHocVienUI();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        System.out.println("Lua chon khong hop le");
+                }
+            } catch (HuyThaoTacException e) {
+                System.out.println("Da huy thao tac.");
             }
         } while (choice != 0);
     }
@@ -74,17 +81,18 @@ public class HocVienUI {
         System.out.println("Nhap ho ten: ");
         String hoTen = NguoiValidator.inputHoTen(null);
         System.out.println("Nhap so dien thoai: ");
-        String soDienThoai = NguoiValidator.inputSoDienThoai(null);
+        String soDienThoai = nhapSoDienThoaiKhongTrung(null, id);
         System.out.println("Nhap email: ");
         String email = NguoiValidator.inputEmail(null);
         System.out.println("Nhap ngay sinh (dd/MM/yyyy): ");
         LocalDate ngaySinh = NguoiValidator.inputNgaySinh(null);
         System.out.println("Chon trinh do dau vao: ");
         TrinhDo trinhDo = CommonValidator.inputTrinhDo(null);
+        User taiKhoan = TaiKhoanUI.nhapTaiKhoan(VaiTro.HOC_VIEN, id);
         try {
             hocVienService.add(new HocVien(id, hoTen, soDienThoai, email, ngaySinh, trinhDo));
             System.out.println("Da them hoc vien, id = " + id);
-            TaiKhoanUI.taoTaiKhoanChoNguoi(VaiTro.HOC_VIEN, id);
+            TaiKhoanUI.luuTaiKhoan(taiKhoan);
             return id;
         } catch (NghiepVuException e) {
             System.out.println("Khong the them: " + e.getMessage());
@@ -93,19 +101,17 @@ public class HocVienUI {
     }
 
     public static void editUI() {
-        System.out.println("====== Sua hoc vien ======");
-        System.out.println("Nhap id hoc vien can sua (0 de quay lai): ");
+        System.out.println("====== Sua thong tin hoc vien ======");
+        inDanhSach(hocVienService.getAll());
+        System.out.println("Nhap id hoc vien can sua: ");
         long id = InputHelper.inputLong();
-        if (id == 0) {
-            return;
-        }
         try {
             HocVien cu = hocVienService.findById(id);
             System.out.println("(Nhan Enter de giu gia tri cu)");
             System.out.println("Ho ten [" + cu.getHoTen() + "]: ");
             String hoTen = NguoiValidator.inputHoTen(cu.getHoTen());
             System.out.println("So dien thoai [" + cu.getSoDienThoai() + "]: ");
-            String soDienThoai = NguoiValidator.inputSoDienThoai(cu.getSoDienThoai());
+            String soDienThoai = nhapSoDienThoaiKhongTrung(cu.getSoDienThoai(), id);
             System.out.println("Email [" + cu.getEmail() + "]: ");
             String email = NguoiValidator.inputEmail(cu.getEmail());
             System.out.println("Ngay sinh [" + FormatHelper.formatDate(cu.getNgaySinh()) + "]: ");
@@ -113,7 +119,7 @@ public class HocVienUI {
             System.out.println("Trinh do dau vao [" + cu.getTrinhDoDauVao().getTenHienThi() + "]: ");
             TrinhDo trinhDo = CommonValidator.inputTrinhDo(cu.getTrinhDoDauVao());
             hocVienService.update(id, new HocVien(id, hoTen, soDienThoai, email, ngaySinh, trinhDo));
-            System.out.println("Da cap nhat hoc vien!");
+            System.out.println("Da cap nhat thong tin hoc vien!");
         } catch (DataNotFoundException e) {
             System.out.println("Khong tim thay hoc vien id " + id);
         } catch (NghiepVuException e) {
@@ -123,11 +129,9 @@ public class HocVienUI {
 
     public static void deleteUI() {
         System.out.println("====== Xoa hoc vien ======");
-        System.out.println("Nhap id hoc vien can xoa (0 de quay lai): ");
+        inDanhSach(hocVienService.getAll());
+        System.out.println("Nhap id hoc vien can xoa: ");
         long id = InputHelper.inputLong();
-        if (id == 0) {
-            return;
-        }
         try {
             HocVien hocVien = hocVienService.findById(id);
             System.out.println("Ban co chac muon xoa hoc vien '" + hocVien.getHoTen() + "'? (y/n)");
@@ -142,28 +146,40 @@ public class HocVienUI {
         }
     }
 
+    private static String nhapSoDienThoaiKhongTrung(String giaTriCu, long hocVienId) {
+        while (true) {
+            String soDienThoai = NguoiValidator.inputSoDienThoai(giaTriCu);
+            try {
+                hocVienService.kiemTraTrungSoDienThoai(soDienThoai, hocVienId);
+                return soDienThoai;
+            } catch (NghiepVuException e) {
+                System.out.println(e.getMessage() + " Nhap so khac:");
+            }
+        }
+    }
+
     public static void getAllUI() {
         System.out.println("====== Danh sach hoc vien ======");
         inDanhSach(hocVienService.getAll());
     }
 
     public static void timTheoTenUI() {
+        System.out.println("====== Tim hoc vien theo ten ======");
         System.out.println("Nhap tu khoa (mot phan cua ho ten): ");
         String keyword = InputHelper.inputString();
         inDanhSach(hocVienService.timTheoTen(keyword));
     }
 
     public static void timTheoSoDienThoaiUI() {
+        System.out.println("====== Tim hoc vien theo so dien thoai ======");
         System.out.println("Nhap so dien thoai (hoac mot phan): ");
         String keyword = InputHelper.inputString();
         inDanhSach(hocVienService.timTheoSoDienThoai(keyword));
     }
 
     public static void xemLopCuaHocVienUI() {
+        System.out.println("====== Danh sach lop theo hoc vien ======");
         long hocVienId = chonHocVienId();
-        if (hocVienId == 0) {
-            return;
-        }
         System.out.println("Cac lop cua hoc vien " + layTenHocVien(hocVienId) + ":");
         DangKyUI.inDanhSach(dangKyService.layDangKyCuaHocVien(hocVienId));
     }
@@ -185,12 +201,9 @@ public class HocVienUI {
 
     public static long chonHocVienId() {
         inDanhSach(hocVienService.getAll());
-        System.out.println("Nhap id hoc vien (0 de quay lai): ");
+        System.out.println("Nhap id hoc vien: ");
         while (true) {
             long id = InputHelper.inputLong();
-            if (id == 0) {
-                return 0;
-            }
             try {
                 hocVienService.findById(id);
                 return id;

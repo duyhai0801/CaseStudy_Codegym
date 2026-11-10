@@ -32,7 +32,7 @@ public class NguoiValidator {
     }
 
     public static int inputSoNamKinhNghiem(Integer giaTriCu) {
-        return CommonValidator.inputIntInRange(0, 50, giaTriCu);
+        return CommonValidator.inputIntInRange(1, 50, giaTriCu);
     }
 
     public static LocalDate inputNgaySinh(LocalDate giaTriCu) {
